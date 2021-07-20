@@ -1,0 +1,8 @@
+### ignore folder ###
+other_methods
+
+
+
+
+### ignore files ###
+.snakemake
