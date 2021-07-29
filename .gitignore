@@ -1,8 +1,11 @@
 ### ignore folder ###
 other_methods
+out
+preprocessed
 
 
 
 
 ### ignore files ###
 .snakemake
+temp.csv
