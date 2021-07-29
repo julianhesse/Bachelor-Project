@@ -1,7 +1,10 @@
 import os
 import subprocess
 
-os.chdir('./methods/iDeepS/EDeN')
+os.chdir('./methods/iDeepS')
+if not os.path.isdir('./EDeN'):
+    subprocess.run(['unzip', 'EDeN.zip'])
+os.chdir('./EDeN')
 
 # python setup.py build_ext -I$CONDA_PREFIX/include/openbabel3 -L$CONDA_PREFIX/lib
 subprocess.run(['python', 'setup.py', 'build_ext', '-I$CONDA_PREFIX/include/openbabel3', '-L$CONDA_PREFIX/lib'])
