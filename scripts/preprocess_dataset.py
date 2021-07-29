@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 seqs = [] # stores dna/rna sequences
 descriptors = [] # stores description of sequences
@@ -61,6 +62,26 @@ if snakemake.config['drop_duplicate_chromosomes']:
     df = df.drop_duplicates(subset=['descriptor'])
 else:
     print('No duplicate chromosomes dropped...')
+
+df.reset_index(inplace=True)
+
+# create split: test and train
+
+print('Splitting dataset ...')
+split = df.groupby(['class']).sample(frac=snakemake.params['frac'], random_state=snakemake.params['seed'])
+part_class_0 = sum(split['class']==0)/sum(df['class'] == 0)
+part_class_1 = sum(split['class']==1)/sum(df['class'] == 1)
+# make sure negatives and positives are split independently
+assert(abs(snakemake.params['frac'] - part_class_0) < 0.01, "Negatives and positives not split independently!")
+assert(abs(snakemake.params['frac'] - part_class_1) < 0.01, "Negatives and positives not split independently!")
+
+msk_split = np.zeros(len(df.index), dtype=bool)
+msk_split[split.index] = True
+df['test'] = msk_split
+
+print(df)
+
+print('Train and test dataset defined')
 
 
 # write remaining entries to csv

@@ -5,17 +5,23 @@ configfile: "config.yaml"
 
 rule preprocess_all:
     input:
-        "preprocessed/RBFOX2_HepG2_iDeepS/preprocess_deepbind.fasta",
-        "preprocessed/RBFOX2_HepG2_iDeepS/preprocess_ideeps.fasta",
-        "preprocessed/RBFOX2_HepG2_iDeepS/preprocess_graphprot2_positive.fasta",
-        "preprocessed/RBFOX2_HepG2_iDeepS/preprocess_graphprot2_negative.fasta"
+        "preprocessed/RBFOX2_HepG2_iDeepS/train_deepbind.seq.gz",
+        "preprocessed/RBFOX2_HepG2_iDeepS/test_deepbind.seq.gz",
+        "preprocessed/RBFOX2_HepG2_iDeepS/train_ideeps.fa.gz",
+        "preprocessed/RBFOX2_HepG2_iDeepS/test_ideeps.fa.gz",
+        "preprocessed/RBFOX2_HepG2_iDeepS/train_graphprot2_positive.fasta",
+        "preprocessed/RBFOX2_HepG2_iDeepS/train_graphprot2_negative.fasta",
+        "preprocessed/RBFOX2_HepG2_iDeepS/test_graphprot2.fasta"
 
 rule preprocess_dataset:
     input:
         positive="datasets/{dataset}/positive.fasta",
         negative="datasets/{dataset}/negative-1-2.fasta"
     output:
-        temp("datasets/{dataset}/temp.csv")
+        "datasets/{dataset}/temp.csv"
+    params:
+        frac=0.25,
+        seed=462
     log:
         "logs/preprocess/{dataset}_to_csv.log"
     script:
@@ -27,7 +33,8 @@ rule preprocess_deepbind:
     params:
         method="deepbind"
     output:
-        "preprocessed/RBFOX2_HepG2_iDeepS/preprocess_deepbind.seq.gz",
+        train="preprocessed/RBFOX2_HepG2_iDeepS/train_deepbind.seq.gz",
+        test="preprocessed/RBFOX2_HepG2_iDeepS/test_deepbind.seq.gz",
     script:
         "scripts/preprocess_for_methods.py"
 
@@ -37,7 +44,8 @@ rule preprocess_ideeps:
     params:
         method="ideeps"
     output:
-        "preprocessed/RBFOX2_HepG2_iDeepS/preprocess_ideeps.fa.gz",
+        train="preprocessed/RBFOX2_HepG2_iDeepS/train_ideeps.fa.gz",
+        test="preprocessed/RBFOX2_HepG2_iDeepS/test_ideeps.fa.gz",
     script:
         "scripts/preprocess_for_methods.py"
 
@@ -47,8 +55,9 @@ rule preprocess_graphprot2:
     params:
         method="graphprot2"
     output:
-        positive="preprocessed/RBFOX2_HepG2_iDeepS/preprocess_graphprot2_positive.fasta",
-        negative="preprocessed/RBFOX2_HepG2_iDeepS/preprocess_graphprot2_negative.fasta"
+        positive="preprocessed/RBFOX2_HepG2_iDeepS/train_graphprot2_positive.fasta",
+        negative="preprocessed/RBFOX2_HepG2_iDeepS/train_graphprot2_negative.fasta",
+        test="preprocessed/RBFOX2_HepG2_iDeepS/test_graphprot2.fasta"
     script:
         "scripts/preprocess_for_methods.py"
 
@@ -58,7 +67,8 @@ rule preprocess_graphprot2:
 
 rule run_deepbind:
     input:
-        "preprocessed/RBFOX2_HepG2_iDeepS/preprocess_deepbind.seq.gz",
+        train="preprocessed/RBFOX2_HepG2_iDeepS/train_deepbind.seq.gz",
+        test="preprocessed/RBFOX2_HepG2_iDeepS/test_deepbind.seq.gz",
     params:
         out="out/RBFOX2_HepG2_iDeepS/deepbind/"
     output:
@@ -71,11 +81,13 @@ rule run_deepbind:
 
 rule run_ideeps:
     input:
-        "preprocessed/RBFOX2_HepG2_iDeepS/preprocess_ideeps.fa.gz",
+        train="preprocessed/RBFOX2_HepG2_iDeepS/train_ideeps.fa.gz",
+        test="preprocessed/RBFOX2_HepG2_iDeepS/test_ideeps.fa.gz",
     params:
         "out/RBFOX2_HepG2_iDeepS/ideeps/"
     output:
-        "out/RBFOX2_HepG2_iDeepS/ideeps/model.pkl"
+        model="out/RBFOX2_HepG2_iDeepS/ideeps/model.pkl",
+        prediction="out/RBFOX2_HepG2_iDeepS/ideeps/prediction.out"
     conda:
         "envs/ideeps.yaml"
     script:
@@ -83,8 +95,9 @@ rule run_ideeps:
 
 rule run_graphprot2:
     input:
-        positive="preprocessed/RBFOX2_HepG2_iDeepS/preprocess_graphprot2_positive.fasta",
-        negative="preprocessed/RBFOX2_HepG2_iDeepS/preprocess_graphprot2_negative.fasta"
+        positive="preprocessed/RBFOX2_HepG2_iDeepS/train_graphprot2_positive.fasta",
+        negative="preprocessed/RBFOX2_HepG2_iDeepS/train_graphprot2_negative.fasta",
+        test="preprocessed/RBFOX2_HepG2_iDeepS/test_graphprot2.fasta"
     params:
         "out/RBFOX2_HepG2_iDeepS/graphprot2/"
     output:
