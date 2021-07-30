@@ -70,7 +70,7 @@ rule run_deepbind:
         train="preprocessed/RBFOX2_HepG2_iDeepS/train_deepbind.seq.gz",
         test="preprocessed/RBFOX2_HepG2_iDeepS/test_deepbind.seq.gz",
     params:
-        out="out/RBFOX2_HepG2_iDeepS/deepbind/"
+        "out/RBFOX2_HepG2_iDeepS/deepbind/"
     output:
         "out/RBFOX2_HepG2_iDeepS/deepbind/model.meta"
     conda:
@@ -101,8 +101,8 @@ rule run_graphprot2:
     params:
         "out/RBFOX2_HepG2_iDeepS/graphprot2/"
     output:
-        "out/RBFOX2_HepG2_iDeepS/graphprot/train_out/final.model"
-    conda:
-        "envs/graphprot2.yaml"
+        out="out/RBFOX2_HepG2_iDeepS/graphprot/train_out/final.model"
+    # conda:
+    #     "envs/graphprot2.yaml"
     script:
         "scripts/run_graphprot2.py"
