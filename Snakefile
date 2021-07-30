@@ -101,7 +101,8 @@ rule run_graphprot2:
     params:
         "out/RBFOX2_HepG2_iDeepS/graphprot2"
     output:
-        out="out/RBFOX2_HepG2_iDeepS/graphprot/train_out/final.model"
+        #model="out/RBFOX2_HepG2_iDeepS/graphprot2/trained_model/final.model",
+        prediction="out/RBFOX2_HepG2_iDeepS/graphprot2/prediction/whole_site_scores.out"
     # conda:
     #     "envs/graphprot2.yaml"
     script:

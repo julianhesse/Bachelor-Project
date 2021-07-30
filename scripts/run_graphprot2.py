@@ -1,5 +1,6 @@
 import subprocess
 import os
+import glob
 
 
 ## Test if GraphProt2 image needs to be created
@@ -77,19 +78,20 @@ negative_file = snakemake.input['negative']
 test_file = snakemake.input['test']
 out_folder = snakemake.params[0]
 
-tmp_out = '/tmp/graphrot2'
+tmp_out = '/tmp/graphprot2'
 if os.path.exists(tmp_out):
-    for f in os.listdir(tmp_out):
-        os.remove(os.path.join(tmp_out, f))
+#    for f in os.listdir(tmp_out):
+#        os.remove(os.path.join(tmp_out, f))
+    pass
 else:
     os.mkdir(tmp_out)
 
 process = subprocess.Popen(['ch-run', '-b', f'{os.getcwd()}:/mnt', '-c', '/mnt',
     '--set-env=CONDA_DIR=/miniconda3', '--set-env=ENV_PREFIX=gp2env',
-    '--set-env=CONDA_PREFIX=/miniconda3/envs/gp2env', '-u', '0', '-w',
+    '--set-env=CONDA_PREFIX=/miniconda3/envs/gp2env', '-w',
     '/var/tmp/graphprot2', '--', # 'source', '/miniconda3/etc/profile.d/conda.sh', '&&',
     './methods/GraphProt2/wrapper.sh', positive_file, negative_file,
-    test_file, '/tmp/graphprot2'],
+    test_file, './'+ out_folder],
     stdout=subprocess.PIPE, universal_newlines=True)
 
 while True:
@@ -107,9 +109,11 @@ print('\nGraphProt2 did run successfully!')
 
 
 # copy from /tmp/out to actual out_folder
-process = subprocess.Popen(['mv', '/tmp/graphprot2', out_folder],
-    stdout=subprocess.PIPE, universal_newlines=True)
+#process = subprocess.Popen(f'mv -v {tmp_out}/* {out_folder}', shell=True)
 
+# print(process.args)
+
+"""
 while True:
     output = process.stdout.readline()
     print(output.strip())
@@ -120,6 +124,7 @@ while True:
         for output in process.stdout.readlines():
             print(output.strip())
         break
+"""
 
 print('\nOutput written successfully!')
 
