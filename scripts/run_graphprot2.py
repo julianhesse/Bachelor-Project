@@ -10,40 +10,44 @@ else:
     os.chdir('./methods/GraphProt2')
     print('Building the image!')
 
-    # Build image with:
-    # ch-build -t graphprot2 .
-    process = subprocess.Popen(['ch-build', '-t', 'graphprot2', '.'],
-        stdout=subprocess.PIPE, universal_newlines=True)
+    if not os.path.isfile('/var/tmp/graphprot2.tar.gz'):
+        # Build image with:
+        # ch-build -t graphprot2 .
+        process = subprocess.Popen(['ch-build', '-t', 'graphprot2', '.'],
+            stdout=subprocess.PIPE, universal_newlines=True)
 
-    while True:
-        output = process.stdout.readline()
-        print(output.strip())
-        return_code = process.poll()
-        if return_code is not None:
-            print('RETURN CODE', return_code)
-            # read rest of output
-            for output in process.stdout.readlines():
-                print(output.strip())
-            break
+        while True:
+            output = process.stdout.readline()
+            print(output.strip())
+            return_code = process.poll()
+            if return_code is not None:
+                print('RETURN CODE', return_code)
+                # read rest of output
+                for output in process.stdout.readlines():
+                    print(output.strip())
+                break
 
-    print('\nPacking build into tar')
-    # Create tar:
-    # ch-builder2tar graphprot2 /var/tmp
-    process = subprocess.Popen(['ch-builder2tar', 'graphprot2', '/var/tmp'],
-        stdout=subprocess.PIPE, universal_newlines=True)
+        print('\nPacking build into tar')
+        # Create tar:
+        # ch-builder2tar graphprot2 /var/tmp
+        process = subprocess.Popen(['ch-builder2tar', 'graphprot2', '/var/tmp'],
+            stdout=subprocess.PIPE, universal_newlines=True)
 
-    while True:
-        output = process.stdout.readline()
-        print(output.strip())
-        return_code = process.poll()
-        if return_code is not None:
-            print('RETURN CODE', return_code)
-            # read rest of output
-            for output in process.stdout.readlines():
-                print(output.strip())
-            break
+        while True:
+            output = process.stdout.readline()
+            print(output.strip())
+            return_code = process.poll()
+            if return_code is not None:
+                print('RETURN CODE', return_code)
+                # read rest of output
+                for output in process.stdout.readlines():
+                    print(output.strip())
+                break
 
-    print('\nUnpacking tar to destination')
+        print('\nUnpacking tar to destination')
+    else:
+        print('Tarball for image already exists!\n')
+
     # Unpack tar:
     # ch-tar2dir /var/tmp/graphprot2.tar.gz /var/tmp
     process = subprocess.Popen(['ch-tar2dir', '/var/tmp/graphprot2.tar.gz', '/var/tmp'],
@@ -65,16 +69,27 @@ else:
 
 print('Running GraphProt2...')
 # Run graphprot2:
-# ch-run -b path_to_project:/data /var/tmp/graphprot2 \
+# ch-run -b path_to_project:/mnt -c /mnt /var/tmp/graphprot2 \
 # -- ./methods/Graphprot2/wrapper.sh path_to_positive_fasta \
 # path_to_negative_fasta path_to_test_fasta path_to_ouput_folder
 positive_file = snakemake.input['positive']
 negative_file = snakemake.input['negative']
 test_file = snakemake.input['test']
 out_folder = snakemake.params[0]
-process = subprocess.Popen(['ch-run', '-b', f'{os.getcwd()}:/data', '/var/tmp/graphprot2',
-    './methods/Graphprot2/wrapper.sh', positive_file, negative_file,
-    test_file, out_folder],
+
+tmp_out = '/tmp/graphrot2'
+if os.path.exists(tmp_out):
+    for f in os.listdir(tmp_out):
+        os.remove(os.path.join(tmp_out, f))
+else:
+    os.mkdir(tmp_out)
+
+process = subprocess.Popen(['ch-run', '-b', f'{os.getcwd()}:/mnt', '-c', '/mnt',
+    '--set-env=CONDA_DIR=/miniconda3', '--set-env=ENV_PREFIX=gp2env',
+    '--set-env=CONDA_PREFIX=/miniconda3/envs/gp2env', '-u', '0', '-w',
+    '/var/tmp/graphprot2', '--', # 'source', '/miniconda3/etc/profile.d/conda.sh', '&&',
+    './methods/GraphProt2/wrapper.sh', positive_file, negative_file,
+    test_file, '/tmp/graphprot2'],
     stdout=subprocess.PIPE, universal_newlines=True)
 
 while True:
@@ -89,6 +104,24 @@ while True:
         break
 
 print('\nGraphProt2 did run successfully!')
+
+
+# copy from /tmp/out to actual out_folder
+process = subprocess.Popen(['mv', '/tmp/graphprot2', out_folder],
+    stdout=subprocess.PIPE, universal_newlines=True)
+
+while True:
+    output = process.stdout.readline()
+    print(output.strip())
+    return_code = process.poll()
+    if return_code is not None:
+        print('RETURN CODE', return_code)
+        # read rest of output
+        for output in process.stdout.readlines():
+            print(output.strip())
+        break
+
+print('\nOutput written successfully!')
 
 """ Old way of execution
 print('Create training dataset for GraphProt2...')

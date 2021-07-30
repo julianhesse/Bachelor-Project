@@ -99,7 +99,7 @@ rule run_graphprot2:
         negative="preprocessed/RBFOX2_HepG2_iDeepS/train_graphprot2_negative.fasta",
         test="preprocessed/RBFOX2_HepG2_iDeepS/test_graphprot2.fasta"
     params:
-        "out/RBFOX2_HepG2_iDeepS/graphprot2/"
+        "out/RBFOX2_HepG2_iDeepS/graphprot2"
     output:
         out="out/RBFOX2_HepG2_iDeepS/graphprot/train_out/final.model"
     # conda:
