@@ -72,9 +72,11 @@ rule run_deepbind:
     params:
         "out/RBFOX2_HepG2_iDeepS/deepbind/"
     output:
-        "out/RBFOX2_HepG2_iDeepS/deepbind/model.meta"
+        prediction="out/RBFOX2_HepG2_iDeepS/deepbind/prediction.out"
     conda:
         "envs/deepbind.yaml"
+    log:
+        "logs/out/deepbind/RBFOX2_HepG2_iDeepS_run.log"
     script:
         "methods/DeepBind_with_Tensorflow/deepbind.py"
 
@@ -90,6 +92,8 @@ rule run_ideeps:
         prediction="out/RBFOX2_HepG2_iDeepS/ideeps/prediction.out"
     conda:
         "envs/ideeps.yaml"
+    log:
+        "logs/out/ideeps/RBFOX2_HepG2_iDeepS_run.log"
     script:
         "scripts/run_ideeps.py"
 
@@ -105,5 +109,7 @@ rule run_graphprot2:
         prediction="out/RBFOX2_HepG2_iDeepS/graphprot2/prediction/whole_site_scores.out"
     # conda:
     #     "envs/graphprot2.yaml"
+    log:
+        "logs/out/graphprot2/RBFOX2_HepG2_iDeepS_run.log"
     script:
         "scripts/run_graphprot2.py"
