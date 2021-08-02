@@ -113,3 +113,16 @@ rule run_graphprot2:
         "logs/out/graphprot2/RBFOX2_HepG2_iDeepS_run.log"
     script:
         "scripts/run_graphprot2.py"
+
+#### aggreagate predictions & evaluate ####
+
+rule aggregate_predictions:
+    input:
+        dataset="datasets/{dataset}/temp.csv",
+        deepbind="out/{dataset}/deepbind/prediction.out",
+        ideeps="out/{dataset}/ideeps/prediction.out",
+        graphprot2="out/{dataset}/graphprot2/prediction/whole_site_scores.out"
+    output:
+        "results/{dataset}/test_results.csv"
+    script:
+        "scripts/aggregate_predictions.py"
