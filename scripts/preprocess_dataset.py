@@ -63,7 +63,7 @@ if snakemake.config['drop_duplicate_chromosomes']:
 else:
     print('No duplicate chromosomes dropped...')
 
-df.reset_index(inplace=True)
+df.reset_index(drop=True, inplace=True)
 
 # create split: test and train
 
