@@ -114,14 +114,33 @@ rule run_graphprot2:
     script:
         "scripts/run_graphprot2.py"
 
-#### aggreagate predictions & evaluate ####
+rule output_graphtprot2:
+    input:
+        "out/{dataset}/graphprot2/prediction/whole_site_scores.out"
+    output:
+        temp("out/{dataset}/graphprot2/prediction.out")
+    shell:
+        "cp {input} {output}"
+
+#### preprocess, aggreagate & evaluate predictions ####
+
+rule preprocess_prediction:
+    input:
+        "out/{dataset}/{method}/prediction.out"
+    params:
+        method="{method}"
+    output:
+        "results/{dataset}/{method}_prediction.out"
+    script:
+        "scripts/preprocess_predictions.py"
+
 
 rule aggregate_predictions:
     input:
         dataset="datasets/{dataset}/temp.csv",
-        deepbind="out/{dataset}/deepbind/prediction.out",
-        ideeps="out/{dataset}/ideeps/prediction.out",
-        graphprot2="out/{dataset}/graphprot2/prediction/whole_site_scores.out"
+        deepbind="results/{dataset}/deepbind_prediction.out",
+        ideeps="results/{dataset}/ideeps_prediction.out",
+        graphprot2="results/{dataset}/graphprot2/prediction.out"
     output:
         "results/{dataset}/test_results.csv"
     script:
