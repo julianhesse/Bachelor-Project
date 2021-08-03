@@ -122,7 +122,7 @@ rule output_graphtprot2:
     shell:
         "cp {input} {output}"
 
-#### preprocess, aggreagate & evaluate predictions ####
+#### preprocess, aggreagate predictions ####
 
 rule preprocess_prediction:
     input:
@@ -134,14 +134,29 @@ rule preprocess_prediction:
     script:
         "scripts/preprocess_predictions.py"
 
-
 rule aggregate_predictions:
     input:
         dataset="datasets/{dataset}/temp.csv",
         deepbind="results/{dataset}/deepbind_prediction.out",
         ideeps="results/{dataset}/ideeps_prediction.out",
-        graphprot2="results/{dataset}/graphprot2/prediction.out"
+        graphprot2="results/{dataset}/graphprot2_prediction.out"
     output:
         "results/{dataset}/test_results.csv"
     script:
         "scripts/aggregate_predictions.py"
+
+#### evaluate predictions ####
+rule classification_report:
+    input:
+        "results/{dataset}/test_results.csv"
+    output:
+        "results/{dataset}/reports/{method}_report.txt",
+        "results/{dataset}/reports/{method}_roc_curve.png"
+    params:
+        method="{method}"
+    script:
+        "scripts/classification_report.py"
+
+rule report_all:
+    input:
+        expand("results/RBFOX2_HepG2_iDeepS/reports/{method}_report.txt", method=config['methods'])

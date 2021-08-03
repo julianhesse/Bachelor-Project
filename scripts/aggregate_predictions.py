@@ -7,20 +7,19 @@ df = pd.read_csv(snakemake.input['dataset'], index_col=0)
 df = df[df['test'] == True]
 
 ## get the prediction values
-models = snakemake.config['models']
+methods = snakemake.config['methods']
 
 print('Aggregation of predictions ...')
-for model in snakemake.config['models']:
-    print('Loading predictions of', model, ':')
-    print(snakemake.input[model], '\n')
-    if model == 'graphprot2':
-        prediction = pd.read_csv(snakemake.input[model], header=None, sep='\t', index_col=0,
-        squeeze=True)
-    else:
-        prediction = pd.read_csv(snakemake.input[model], header=None, sep='\t', squeeze=True)
+for method in methods:
+    print('Loading predictions of', method, ':')
+    print(snakemake.input[method], '\n')
+    prediction = pd.read_csv(snakemake.input[method], squeeze=True)
 
+    print(prediction)
     prediction.index = df.index
-    df[model] = prediction
+    print(prediction)
+    print(df)
+    df[method] = prediction
 
 print(df)
 print('\nAggreagation finished!\n')

@@ -17,12 +17,12 @@ else:
 print('Predictions loaded:')
 print(predictions)
 
-# transform to range (-1, 1)
-if prediction_range != [-1, 1]:
+# transform to range (0, 1)
+if prediction_range != [0, 1]:
     arr = predictions
     arr = arr - prediction_range[0]
     scale = prediction_range[1] - prediction_range[0]
-    arr = (arr / scale) * 2 - 1
+    arr = arr / scale
     
     predictions = arr
 
@@ -30,7 +30,7 @@ print('\nPredictions transformed:')
 print(predictions)
 
 # save transformed predictions
-predictions.to_csv(snakemake.output[0])
+predictions.to_csv(snakemake.output[0], index=False)
 
 print('\nSaved to:', snakemake.output[0])
 print('\nDone!\n')
