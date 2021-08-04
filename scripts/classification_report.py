@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report, roc_curve, auc
 from sklearn.metrics import RocCurveDisplay, PrecisionRecallDisplay
-from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import precision_recall_curve, average_precision_score
 
 method = snakemake.params['method']
 
@@ -37,7 +37,7 @@ print(report)
 with open(snakemake.output[0], 'w') as f:
     f.write(report)
 
-## plot roc curve
+## plot roc curve and precision recall curve
 # def true_false_positive(threshold_vector, y_test):
 #     true_positive = np.equal(threshold_vector, 1) & np.equal(y_test, 1)
 #     true_negative = np.equal(threshold_vector, 0) & np.equal(y_test, 0)
@@ -65,33 +65,42 @@ with open(snakemake.output[0], 'w') as f:
 fpr, tpr, _ = roc_curve(y_true, predictions)
 roc_auc = auc(fpr, tpr)
 
-print('fpr:')
-print(fpr)
-print('\ntpr:')
-print(tpr)
 
+prec, recall, _ = precision_recall_curve(y_true, predictions)
+average_precision = average_precision_score(y_true, predictions)
 
-plt.figure()
-lw = 2
-plt.plot(fpr, tpr, color='darkorange',
+fig, ax = plt.subplots(2, 2, figsize=(16, 16))
+
+ax1, ax2, ax3, ax4 = ax.flat
+
+# plt.figure()
+lw = 1.5
+ax1.plot(fpr, tpr, color='darkorange',
          lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
-plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-plt.xlim([0.0, 1.0])
-plt.ylim([0.0, 1.05])
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title(f'Receiver operating characteristic {method}')
-plt.legend(loc="lower right")
+ax1.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+ax1.set_xlim([0.0, 1.0])
+ax1.set_ylim([0.0, 1.05])
+ax1.set_xlabel('False Positive Rate')
+ax1.set_ylabel('True Positive Rate')
+ax1.set_title(f'Receiver operating characteristic {method}')
+ax1.legend(loc="lower right")
 #plt.show()
-plt.savefig(snakemake.output[1], dpi=300)
+
+ax2.plot(recall, prec,
+         lw=lw, label='PR curve (AP = %0.2f)' % average_precision)
+ax2.set_xlim([-0.1, 1.1])
+# ax2.set_ylim([0.0, 1.05])
+ax2.set_xlabel('Recall')
+ax2.set_ylabel('Precision')
+ax2.set_title(f'2-class Precision-Recall curve {method}')
+ax2.legend(loc="lower left")
 
 
-# roc_display = RocCurveDisplay(fpr=fpr, tpr=tpr).plot()
-# plt.show()
-# 
-# prec, recall, _ = precision_recall_curve(y_true, predictions, pos_label=1)
-# pr_display = PrecisionRecallDisplay(precision=prec, recall=recall).plot()
-# plt.show()
+roc_display = RocCurveDisplay(fpr=fpr, tpr=tpr).plot(ax=ax3)
+ 
+pr_display = PrecisionRecallDisplay(precision=prec, recall=recall).plot(ax=ax4)
+
+fig.savefig(snakemake.output[1], dpi=300)
 
 
 print('\nPlots created')

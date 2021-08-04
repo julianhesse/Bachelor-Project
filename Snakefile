@@ -151,7 +151,7 @@ rule classification_report:
         "results/{dataset}/test_results.csv"
     output:
         "results/{dataset}/reports/{method}_report.txt",
-        "results/{dataset}/reports/{method}_roc_curve.png"
+        "results/{dataset}/reports/{method}_roc_pr_curve.png"
     params:
         method="{method}"
     script:
