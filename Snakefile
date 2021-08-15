@@ -76,7 +76,7 @@ rule run_deepbind:
     conda:
         "envs/deepbind.yaml"
     log:
-        "logs/out/deepbind/RBFOX2_HepG2_iDeepS_run.log"
+        "logs/out/deepbind/RBFOX2_HepG2_deepbind_run.log"
     script:
         "methods/DeepBind_with_Tensorflow/deepbind.py"
 
@@ -110,7 +110,7 @@ rule run_graphprot2:
     # conda:
     #     "envs/graphprot2.yaml"
     log:
-        "logs/out/graphprot2/RBFOX2_HepG2_iDeepS_run.log"
+        "logs/out/graphprot2/RBFOX2_HepG2_graphprot2_run.log"
     script:
         "scripts/run_graphprot2.py"
 
