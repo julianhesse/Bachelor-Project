@@ -87,8 +87,7 @@ else:
     os.mkdir(tmp_out)
 
 process = subprocess.Popen(['ch-run', '-b', f'{os.getcwd()}:/mnt', '-c', '/mnt',
-    '--set-env=CONDA_DIR=/miniconda3', '--set-env=ENV_PREFIX=gp2env',
-    '--set-env=CONDA_PREFIX=/miniconda3/envs/gp2env', '-w',
+    '--set-env=./methods/GraphProt2/environment.sh', '-w',
     '/var/tmp/graphprot2', '--', # 'source', '/miniconda3/etc/profile.d/conda.sh', '&&',
     './methods/GraphProt2/wrapper.sh', positive_file, negative_file,
     test_file, './'+ out_folder],
