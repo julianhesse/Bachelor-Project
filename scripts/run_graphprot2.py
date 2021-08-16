@@ -93,6 +93,8 @@ process = subprocess.Popen(['ch-run', '-b', f'{os.getcwd()}:/mnt', '-c', '/mnt',
     test_file, './'+ out_folder],
     stdout=subprocess.PIPE, universal_newlines=True)
 
+print(process.args)
+
 while True:
     output = process.stdout.readline()
     print(output.strip())
