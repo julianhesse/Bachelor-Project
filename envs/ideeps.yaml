@@ -11,6 +11,7 @@ dependencies:
   - fontconfig=2.13.1=h7e3eb15_1002
   - freetype=2.10.4=h7ca028e_0
   - glib=2.68.2=h36276a3_0
+  - cudatoolkit=10.0.130=0
   - icu=67.1=he1b5a44_0
   - intel-openmp=2021.2.0=h06a4308_610
   - libffi=3.3=he6710b0_2
