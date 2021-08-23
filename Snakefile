@@ -104,6 +104,7 @@ rule run_graphprot2:
         test="preprocessed/RBFOX2_HepG2_iDeepS/test_graphprot2.fasta"
     params:
         "out/RBFOX2_HepG2_iDeepS/graphprot2"
+        conainer="singularity"
     output:
         #model="out/RBFOX2_HepG2_iDeepS/graphprot2/trained_model/final.model",
         prediction="out/RBFOX2_HepG2_iDeepS/graphprot2/prediction/whole_site_scores.out"
