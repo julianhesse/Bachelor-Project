@@ -2,20 +2,16 @@ import subprocess
 import os
 import glob
 
-if snakemake.params["container"] == 'singularity':
-    use_singularity()
-else:
-    use_charliecloud()
 
 def use_singularity():
     print('\nChecking if image for GraphProt2 exists...')
-    if os.path.isfile('./methods/GraphProt2/graphprot.sif'):
+    if os.path.isfile('./methods/GraphProt2/graphprot2.sif'):
         print('Image already downloaded!')
     else:
         # Downloading  from the sylabs cloud (from singularity)
         # Image can also be build using the graphprot2.def file
         print('Downloading the image!')
-        process = subprocess.Popen(['singularity', 'pull', 'graphprot2.sif',
+        process = subprocess.Popen(['singularity', 'pull', './methods/GraphProt2/graphprot2.sif',
             'library://julianh/helmholtz-benchmark/graphprot2:latest'],
             stdout=subprocess.PIPE, universal_newlines=True)
 
@@ -41,6 +37,7 @@ def use_singularity():
 
     print('Running GraphProt2...')
     process = subprocess.Popen(['singularity', 'exec', '--bind', f'{os.getcwd()}:/mnt',  
+        '--fakeroot', './methods/GraphProt2/graphprot2.sif',
         './methods/GraphProt2/wrapper.sh', positive_file, negative_file,
         test_file, './'+ out_folder],
         stdout=subprocess.PIPE, universal_newlines=True)
@@ -66,13 +63,13 @@ def use_singularity():
 def use_charliecloud():
     ## Test if GraphProt2 image needs to be created
     print('\nChecking if image for GraphProt2 exists...')
-    if os.path.isdir('/var/tmp/graphprot2'):
+    if os.path.isdir(f'{snakemake.config["image_dir"]}graphprot2'):
         print('Image already build!')
     else:
         os.chdir('./methods/GraphProt2')
         print('Building the image!')
 
-        if not os.path.isfile('/var/tmp/graphprot2.tar.gz'):
+        if not os.path.isfile(f'{snakemake.config["tarball_dir"]}graphprot2.tar.gz'):
             # Build image with:
             # ch-build -t graphprot2 .
             process = subprocess.Popen(['ch-build', '-t', 'graphprot2', '.'],
@@ -92,7 +89,7 @@ def use_charliecloud():
             print('\nPacking build into tar')
             # Create tar:
             # ch-builder2tar graphprot2 /var/tmp
-            process = subprocess.Popen(['ch-builder2tar', 'graphprot2', '/var/tmp'],
+            process = subprocess.Popen(['ch-builder2tar', 'graphprot2', f'{snakemake.config["tarball_dir"]}'],
                 stdout=subprocess.PIPE, universal_newlines=True)
 
             while True:
@@ -112,7 +109,7 @@ def use_charliecloud():
 
         # Unpack tar:
         # ch-tar2dir /var/tmp/graphprot2.tar.gz /var/tmp
-        process = subprocess.Popen(['ch-tar2dir', '/var/tmp/graphprot2.tar.gz', '/var/tmp'],
+        process = subprocess.Popen(['ch-tar2dir', f'{snakemake.config["tarball_dir"]}graphprot2.tar.gz', f'{snakemake.config["image_dir"]}'],
             stdout=subprocess.PIPE, universal_newlines=True)
 
         while True:
@@ -150,7 +147,7 @@ def use_charliecloud():
 
     process = subprocess.Popen(['ch-run', '-b', f'{os.getcwd()}:/mnt', '-c', '/mnt',
         '--set-env=./methods/GraphProt2/environment.sh', '-w',
-        '/var/tmp/graphprot2', '--', # 'source', '/miniconda3/etc/profile.d/conda.sh', '&&',
+        f'{snakemake.config["image_dir"]}graphprot2', '--',
         './methods/GraphProt2/wrapper.sh', positive_file, negative_file,
         test_file, './'+ out_folder],
         stdout=subprocess.PIPE, universal_newlines=True)
@@ -171,6 +168,10 @@ def use_charliecloud():
     print('\nGraphProt2 did run successfully!')
 
 
+if snakemake.params[1] == 'singularity':
+    use_singularity()
+else:
+    use_charliecloud()
 
 
 """ Old way of execution

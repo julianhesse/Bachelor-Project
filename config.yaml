@@ -2,10 +2,14 @@ drop_duplicate_chromosomes: false
 drop_duplicates: true
 
 # config for the methods
-methods: [deepbind, ideeps, graphprot2]
+#methods: [deepbind, ideeps, graphprot2]
+#methods: [deepbind, ideeps]
+methods: [deepbind]
 prediction_range:
     {
         deepbind: [0,1],
         ideeps: [0,1],
         graphprot2: [-1,1],
     }
+tarball_dir: "/home/icb/julian.hesse/"
+image_dir: "/localscratch/julian.hesse/"
