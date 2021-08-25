@@ -18,7 +18,7 @@ rule preprocess_dataset:
         positive="datasets/{dataset}/positive.fasta",
         negative="datasets/{dataset}/negative-1-2.fasta"
     output:
-        "datasets/{dataset}/temp.csv"
+        "out/{dataset}/temp.csv"
     params:
         frac=0.25,
         seed=462
@@ -29,35 +29,35 @@ rule preprocess_dataset:
 
 rule preprocess_deepbind:
     input:
-        data="datasets/RBFOX2_HepG2_iDeepS/temp.csv",
+        data="out/{dataset}/temp.csv",
     params:
         method="deepbind"
     output:
-        train="preprocessed/RBFOX2_HepG2_iDeepS/train_deepbind.seq.gz",
-        test="preprocessed/RBFOX2_HepG2_iDeepS/test_deepbind.seq.gz",
+        train="out/{dataset}/data/train_deepbind.seq.gz",
+        test="out/{dataset}/data/test_deepbind.seq.gz",
     script:
         "scripts/preprocess_for_methods.py"
 
 rule preprocess_ideeps:
     input:
-        data="datasets/RBFOX2_HepG2_iDeepS/temp.csv",
+        data="out/{dataset}/temp.csv",
     params:
         method="ideeps"
     output:
-        train="preprocessed/RBFOX2_HepG2_iDeepS/train_ideeps.fa.gz",
-        test="preprocessed/RBFOX2_HepG2_iDeepS/test_ideeps.fa.gz",
+        train="out/{dataset}/data/train_ideeps.fa.gz",
+        test="out/{dataset}/data/test_ideeps.fa.gz",
     script:
         "scripts/preprocess_for_methods.py"
 
 rule preprocess_graphprot2:
     input:
-        data="datasets/RBFOX2_HepG2_iDeepS/temp.csv",
+        data="out/{dataset}/temp.csv",
     params:
         method="graphprot2"
     output:
-        positive="preprocessed/RBFOX2_HepG2_iDeepS/train_graphprot2_positive.fasta",
-        negative="preprocessed/RBFOX2_HepG2_iDeepS/train_graphprot2_negative.fasta",
-        test="preprocessed/RBFOX2_HepG2_iDeepS/test_graphprot2.fasta"
+        positive="out/{dataset}/data/train_graphprot2_positive.fasta",
+        negative="out/{dataset}/data/train_graphprot2_negative.fasta",
+        test="out/{dataset}/data/test_graphprot2.fasta"
     script:
         "scripts/preprocess_for_methods.py"
 
@@ -67,52 +67,58 @@ rule preprocess_graphprot2:
 
 rule run_deepbind:
     input:
-        train="preprocessed/RBFOX2_HepG2_iDeepS/train_deepbind.seq.gz",
-        test="preprocessed/RBFOX2_HepG2_iDeepS/test_deepbind.seq.gz",
+        train="out/{dataset}/data/train_deepbind.seq.gz",
+        test="out/{dataset}/data/test_deepbind.seq.gz",
     params:
-        "out/RBFOX2_HepG2_iDeepS/deepbind/"
+        "out/{dataset}/deepbind/"
     output:
-        prediction="out/RBFOX2_HepG2_iDeepS/deepbind/prediction.out"
+        prediction="out/{dataset}/deepbind/prediction.out"
+    benchmark:
+        "out/{dataset}/deepbind/benchmark.txt"
     conda:
         "envs/deepbind.yaml"
     log:
-        "logs/out/deepbind/RBFOX2_HepG2_deepbind_run.log"
+        "logs/out/deepbind/{dataset}_deepbind_run.log"
     script:
         "methods/DeepBind_with_Tensorflow/deepbind.py"
 
 
 rule run_ideeps:
     input:
-        train="preprocessed/RBFOX2_HepG2_iDeepS/train_ideeps.fa.gz",
-        test="preprocessed/RBFOX2_HepG2_iDeepS/test_ideeps.fa.gz",
+        train="out/{dataset}/data/train_ideeps.fa.gz",
+        test="out/{dataset}/data/test_ideeps.fa.gz",
     params:
-        "out/RBFOX2_HepG2_iDeepS/ideeps/"
+        "out/{dataset}/ideeps/"
     output:
-        model="out/RBFOX2_HepG2_iDeepS/ideeps/model.pkl",
-        prediction="out/RBFOX2_HepG2_iDeepS/ideeps/prediction.out"
+        model="out/{dataset}/ideeps/model.pkl",
+        prediction="out/{dataset}/ideeps/prediction.out"
+    benchmark:
+        "out/{dataset}/ideeps/benchmark.txt"
     conda:
         "envs/ideeps.yaml"
     log:
-        "logs/out/ideeps/RBFOX2_HepG2_iDeepS_run.log"
+        "logs/out/ideeps/{dataset}_iDeepS_run.log"
     script:
         "scripts/run_ideeps.py"
 
 rule run_graphprot2:
     input:
-        positive="preprocessed/RBFOX2_HepG2_iDeepS/train_graphprot2_positive.fasta",
-        negative="preprocessed/RBFOX2_HepG2_iDeepS/train_graphprot2_negative.fasta",
-        test="preprocessed/RBFOX2_HepG2_iDeepS/test_graphprot2.fasta"
+        positive="out/{dataset}/data/train_graphprot2_positive.fasta",
+        negative="out/{dataset}/data/train_graphprot2_negative.fasta",
+        test="out/{dataset}/data/test_graphprot2.fasta"
     params:
-        "out/RBFOX2_HepG2_iDeepS/graphprot2",
+        "out/{dataset}/graphprot2",
         conainer="charliecloud"
         #conainer="singularity"
     output:
-        #model="out/RBFOX2_HepG2_iDeepS/graphprot2/trained_model/final.model",
-        prediction="out/RBFOX2_HepG2_iDeepS/graphprot2/prediction/whole_site_scores.out"
+        #model="out/{dataset}/graphprot2/trained_model/final.model",
+        prediction="out/{dataset}/graphprot2/prediction/whole_site_scores.out"
+    benchmark:
+        "out/{dataset}/graphprot2/benchmark.txt"
     # conda:
     #     "envs/graphprot2.yaml"
     log:
-        "logs/out/graphprot2/RBFOX2_HepG2_graphprot2_run.log"
+        "logs/out/graphprot2/{dataset}_graphprot2_run.log"
     script:
         "scripts/run_graphprot2.py"
 
@@ -132,28 +138,28 @@ rule preprocess_prediction:
     params:
         method="{method}"
     output:
-        "results/{dataset}/{method}_prediction.out"
+        "out/{dataset}/results/{method}_prediction.out"
     script:
         "scripts/preprocess_predictions.py"
 
 rule aggregate_predictions:
     input:
-        dataset="datasets/{dataset}/temp.csv",
-        deepbind="results/{dataset}/deepbind_prediction.out",
-        ideeps="results/{dataset}/ideeps_prediction.out",
-        graphprot2="results/{dataset}/graphprot2_prediction.out"
+        dataset="out/{dataset}/temp.csv",
+        deepbind="out/{dataset}/results/deepbind_prediction.out",
+        ideeps="out/{dataset}/results/ideeps_prediction.out",
+        graphprot2="out/{dataset}/results/graphprot2_prediction.out"
     output:
-        "results/{dataset}/test_results.csv"
+        "out/{dataset}/results/results.csv"
     script:
         "scripts/aggregate_predictions.py"
 
 #### evaluate predictions ####
 rule classification_report:
     input:
-        "results/{dataset}/test_results.csv"
+        "out/{dataset}/results/results.csv"
     output:
-        "results/{dataset}/reports/{method}_report.txt",
-        "results/{dataset}/reports/{method}_roc_pr_curve.png"
+        "out/{dataset}/reports/{method}_report.txt",
+        "out/{dataset}/reports/{method}_roc_pr_curve.png"
     params:
         method="{method}"
     script:
@@ -161,4 +167,4 @@ rule classification_report:
 
 rule report_all:
     input:
-        expand("results/RBFOX2_HepG2_iDeepS/reports/{method}_report.txt", method=config['methods'])
+        expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_report.txt", method=config['methods'])
