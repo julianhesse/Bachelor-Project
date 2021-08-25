@@ -2,9 +2,7 @@ drop_duplicate_chromosomes: false
 drop_duplicates: true
 
 # config for the methods
-#methods: [deepbind, ideeps, graphprot2]
-#methods: [deepbind, ideeps]
-methods: [deepbind]
+methods: [deepbind, ideeps, graphprot2]
 prediction_range:
     {
         deepbind: [0,1],
