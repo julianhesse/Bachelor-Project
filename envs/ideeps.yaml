@@ -78,7 +78,7 @@ dependencies:
     - scikit-learn==0.17
     - scipy==1.2.3
     - seaborn==0.6.0
-    - theano==0.9.0
+    - theano==1.0.0
     - urllib3==1.26.4
     #- -e git+https://github.com/fabriziocosta/EDeN.git@v1.0#egg=eden
     #- -e ./methods/EDeN
