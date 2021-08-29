@@ -11,6 +11,8 @@ if method == 'graphprot2':
     predictions = pd.read_csv(snakemake.input[0], header=None, sep='\t', index_col=0,
         squeeze=True)
     predictions.sort_index(inplace=True)
+elif method == 'graphprot':
+    predictions = pd.read_csv(snakemake.input[0], header=None, sep='\t', index_col=0)[2]
 else:
     predictions = pd.read_csv(snakemake.input[0], header=None, sep='\t', squeeze=True)
 
@@ -18,7 +20,11 @@ print('Predictions loaded:')
 print(predictions)
 
 # transform to range (0, 1)
-if prediction_range != [0, 1]:
+if prediction_range == 'open':
+    # range is open ended
+    # so sigmoid squashes them into [0,1]
+    predictions = 1 / (1+ np.exp(-predictions))
+elif prediction_range != [0, 1]:
     arr = predictions
     arr = arr - prediction_range[0]
     scale = prediction_range[1] - prediction_range[0]

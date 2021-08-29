@@ -170,6 +170,7 @@ rule aggregate_predictions:
         dataset="out/{dataset}/temp.csv",
         deepbind="out/{dataset}/results/deepbind_prediction.out",
         ideeps="out/{dataset}/results/ideeps_prediction.out",
+        graphprot="out/{dataset}/results/graphprot_prediction.out",
         graphprot2="out/{dataset}/results/graphprot2_prediction.out"
     output:
         "out/{dataset}/results/results.csv"
