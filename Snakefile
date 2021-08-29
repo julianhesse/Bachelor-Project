@@ -49,15 +49,17 @@ rule preprocess_ideeps:
     script:
         "scripts/preprocess_for_methods.py"
 
-rule preprocess_graphprot2:
+rule preprocess_graphprot:
+    # GraphProt and GraphProt2 can use the same format!
+    # very nice :)
     input:
         data="out/{dataset}/temp.csv",
     params:
-        method="graphprot2"
+        method="graphprot"
     output:
-        positive="out/{dataset}/data/train_graphprot2_positive.fasta",
-        negative="out/{dataset}/data/train_graphprot2_negative.fasta",
-        test="out/{dataset}/data/test_graphprot2.fasta"
+        positive="out/{dataset}/data/train_graphprot_positive.fasta",
+        negative="out/{dataset}/data/train_graphprot_negative.fasta",
+        test="out/{dataset}/data/test_graphprot.fasta"
     script:
         "scripts/preprocess_for_methods.py"
 
@@ -103,24 +105,45 @@ rule run_ideeps:
 
 rule run_graphprot2:
     input:
-        positive="out/{dataset}/data/train_graphprot2_positive.fasta",
-        negative="out/{dataset}/data/train_graphprot2_negative.fasta",
-        test="out/{dataset}/data/test_graphprot2.fasta"
+        positive="out/{dataset}/data/train_graphprot_positive.fasta",
+        negative="out/{dataset}/data/train_graphprot_negative.fasta",
+        test="out/{dataset}/data/test_graphprot.fasta"
     params:
         "out/{dataset}/graphprot2",
         conainer="charliecloud"
         #conainer="singularity"
     output:
-        #model="out/{dataset}/graphprot2/trained_model/final.model",
+        model="out/{dataset}/graphprot2/trained_model/final.model",
         prediction="out/{dataset}/graphprot2/prediction/whole_site_scores.out"
     benchmark:
         "out/{dataset}/graphprot2/benchmark.txt"
-    # conda:
-    #     "envs/graphprot2.yaml"
     log:
         "logs/out/graphprot2/{dataset}_graphprot2_run.log"
     script:
         "scripts/run_graphprot2.py"
+
+rule run_graphprot:
+    input:
+        positive="out/{dataset}/data/train_graphprot_positive.fasta",
+        negative="out/{dataset}/data/train_graphprot_negative.fasta",
+        test="out/{dataset}/data/test_graphprot.fasta"
+    output:
+        model="out/{dataset}/graphprot/GraphProt.model",
+        prediction="out/{dataset}/graphprot/prediction.out"
+    benchmark:
+        "out/{dataset}/graphprot/benchmark.txt"
+    conda:
+        "envs/graphprot.yaml"
+    log:
+        "logs/out/graphprot2/{dataset}_graphprot_run.log"
+    shell:
+        """
+        cd out/{wildcards.dataset}/graphprot
+        GraphProt.pl --action train -fasta ../../../{input.positive} \
+            -negfasta ../../../{input.negative}
+        GraphProt.pl --action predict -model GraphProt.model -fasta ../../../{input.test}
+        mv GraphProt.predictions prediction.out
+        """
 
 rule output_graphtprot2:
     input:

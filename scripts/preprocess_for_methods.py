@@ -44,8 +44,8 @@ elif snakemake.params[0] == 'ideeps':
     print('Test file written!')
 
 ## preprocessing GraphProt2
-elif snakemake.params[0] == 'graphprot2':
-    print('Writing files for GraphProt2...')
+elif snakemake.params[0] == 'graphprot':
+    print('Writing files for GraphProt and GraphProt2...')
     # needs two files: one with positives and one with negatives
     # no sequences with only N are allowed -> already removed
     # no duplicated chromosome names are allowed -> use index as identifier
