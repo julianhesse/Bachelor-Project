@@ -7,6 +7,7 @@ prediction_range:
     {
         deepbind: [0,1],
         ideeps: [0,1],
+        graphprot: 'open',
         graphprot2: [-1,1],
     }
 tarball_dir: "/home/icb/julian.hesse/"
