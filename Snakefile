@@ -3,6 +3,8 @@ configfile: "config.yaml"
 
 #### preprocessing #####
 
+DB="out/{dataset}/db.csv" # Database for data about the samples
+
 rule preprocess_all:
     input:
         "preprocessed/RBFOX2_HepG2_iDeepS/train_deepbind.seq.gz",
@@ -18,9 +20,9 @@ rule preprocess_dataset:
         positive="datasets/{dataset}/positive.fasta",
         negative="datasets/{dataset}/negative-1-2.fasta"
     output:
-        "out/{dataset}/temp.csv"
+        DB
     params:
-        frac=0.25,
+        folds=config['folds'],
         seed=462
     log:
         "logs/preprocess/{dataset}_to_csv.log"
@@ -29,7 +31,7 @@ rule preprocess_dataset:
 
 rule preprocess_deepbind:
     input:
-        data="out/{dataset}/temp.csv",
+        data=DB,
     params:
         method="deepbind"
     output:
@@ -40,7 +42,7 @@ rule preprocess_deepbind:
 
 rule preprocess_ideeps:
     input:
-        data="out/{dataset}/temp.csv",
+        data=DB,
     params:
         method="ideeps"
     output:
@@ -53,7 +55,7 @@ rule preprocess_graphprot:
     # GraphProt and GraphProt2 can use the same format!
     # very nice :)
     input:
-        data="out/{dataset}/temp.csv",
+        data=DB,
     params:
         method="graphprot"
     output:

@@ -65,25 +65,41 @@ else:
 
 df.reset_index(drop=True, inplace=True)
 
-# create split: test and train
+# create folds
+# perserve ratio of classes in folds
 
-print('Splitting dataset ...')
-split = df.groupby(['class']).sample(frac=snakemake.params['frac'], random_state=snakemake.params['seed'])
-part_class_0 = sum(split['class']==0)/sum(df['class'] == 0)
-part_class_1 = sum(split['class']==1)/sum(df['class'] == 1)
-# make sure negatives and positives are split independently
-assert(abs(snakemake.params['frac'] - part_class_0) < 0.01, "Negatives and positives not split independently!")
-assert(abs(snakemake.params['frac'] - part_class_1) < 0.01, "Negatives and positives not split independently!")
+folds = snakemake.params['folds']
+print(f'Partition dataset into {folds} folds ...')
 
-msk_split = np.zeros(len(df.index), dtype=bool)
-msk_split[split.index] = True
-df['test'] = msk_split
+ids_pos = df[df["class"] == 1].index.to_numpy()
+ids_neg = df[df["class"] == 0].index.to_numpy()
+
+np.random.seed(snakemake.params['seed'])
+ids_pos = np.random.permutation(ids_pos)
+ids_neg = np.random.permutation(ids_neg)
+
+folds_pos = np.array_split(ids_pos, folds)
+folds_neg = np.array_split(ids_neg, folds)
+
+folds_ids = [np.concatenate((pos,neg)) for pos, neg in zip(folds_pos, folds_neg)]
+
+fold_column = np.zeros(len(df), dtype=int)
+
+for i, ids in enumerate(folds_ids):
+    fold_column[ids] = i
+
+print("Size of folds:")
+unique, counts = np.unique(fold_column, return_counts=True)
+print(dict(zip(unique, counts)))
+
+df['fold'] = fold_column
 
 print(df)
 
-print('Train and test dataset defined')
+print('Folds are defined...')
 
 
 # write remaining entries to csv
 df.to_csv(snakemake.output[0])
 print('CSV file created!')
+print('Dataset preprocessed!')

@@ -1,5 +1,9 @@
+# settings for preprocessing
 drop_duplicate_chromosomes: false
 drop_duplicates: true
+
+# cross-validation
+folds: 5
 
 # config for the methods
 methods: [deepbind, ideeps, graphprot, graphprot2]
