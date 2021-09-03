@@ -80,14 +80,14 @@ rule preprocess_graphprot:
 
 rule run_deepbind:
     input:
-        train="out/{dataset}/data/train_deepbind.seq.gz",
-        test="out/{dataset}/data/test_deepbind.seq.gz",
+        train="out/{dataset}/data/{fold}_train_deepbind.seq.gz",
+        test="out/{dataset}/data/{fold}_test_deepbind.seq.gz",
     params:
-        "out/{dataset}/deepbind/"
+        "out/{dataset}/fold-{fold}/deepbind/"
     output:
-        prediction="out/{dataset}/deepbind/prediction.out"
+        prediction="out/{dataset}/fold-{fold}/deepbind/prediction.out"
     benchmark:
-        "out/{dataset}/deepbind/benchmark.txt"
+        "out/{dataset}/fold-{fold}/deepbind/benchmark.txt"
     conda:
         "envs/deepbind.yaml"
     log:
@@ -98,15 +98,15 @@ rule run_deepbind:
 
 rule run_ideeps:
     input:
-        train="out/{dataset}/data/train_ideeps.fa.gz",
-        test="out/{dataset}/data/test_ideeps.fa.gz",
+        train="out/{dataset}/data/{fold}_train_ideeps.fa.gz",
+        test="out/{dataset}/data/{fold}_test_ideeps.fa.gz",
     params:
-        "out/{dataset}/ideeps/"
+        "out/{dataset}/fold-{fold}/ideeps/"
     output:
-        model="out/{dataset}/ideeps/model.pkl",
-        prediction="out/{dataset}/ideeps/prediction.out"
+        model="out/{dataset}/fold-{fold}/ideeps/model.pkl",
+        prediction="out/{dataset}/fold-{fold}/ideeps/prediction.out"
     benchmark:
-        "out/{dataset}/ideeps/benchmark.txt"
+        "out/{dataset}/fold-{fold}/ideeps/benchmark.txt"
     conda:
         "envs/ideeps.yaml"
     log:
@@ -116,16 +116,16 @@ rule run_ideeps:
 
 rule run_graphprot2:
     input:
-        positive="out/{dataset}/data/train_graphprot_positive.fasta",
-        negative="out/{dataset}/data/train_graphprot_negative.fasta",
-        test="out/{dataset}/data/test_graphprot.fasta"
+        positive="out/{dataset}/data/{fold}_train_graphprot_positive.fasta",
+        negative="out/{dataset}/data/{fold}_train_graphprot_negative.fasta",
+        test="out/{dataset}/data/{fold}_test_graphprot.fasta"
     params:
-        "out/{dataset}/graphprot2",
+        "out/{dataset}/fold-{fold}/graphprot2",
         conainer="charliecloud"
         #conainer="singularity"
     output:
-        model="out/{dataset}/graphprot2/trained_model/final.model",
-        prediction="out/{dataset}/graphprot2/prediction/whole_site_scores.out"
+        model="out/{dataset}/fold-{fold}/graphprot2/trained_model/final.model",
+        prediction="out/{dataset}/fold-{fold}/graphprot2/prediction/whole_site_scores.out"
     benchmark:
         "out/{dataset}/graphprot2/benchmark.txt"
     log:
@@ -139,8 +139,8 @@ rule run_graphprot:
         negative="out/{dataset}/data/train_graphprot_negative.fasta",
         test="out/{dataset}/data/test_graphprot.fasta"
     output:
-        model="out/{dataset}/graphprot/GraphProt.model",
-        prediction="out/{dataset}/graphprot/prediction.out"
+        model="out/{dataset}/fold-{fold}/graphprot/GraphProt.model",
+        prediction="out/{dataset}/fold-{fold}/graphprot/prediction.out"
     benchmark:
         "out/{dataset}/graphprot/benchmark.txt"
     conda:
@@ -149,10 +149,10 @@ rule run_graphprot:
         "logs/out/graphprot2/{dataset}_graphprot_run.log"
     shell:
         """
-        cd out/{wildcards.dataset}/graphprot
-        GraphProt.pl --action train -fasta ../../../{input.positive} \
-            -negfasta ../../../{input.negative}
-        GraphProt.pl --action predict -model GraphProt.model -fasta ../../../{input.test}
+        cd out/{wildcards.dataset}/graphprot/fold-{wildcards.fold}
+        GraphProt.pl --action train -fasta ../../../../{input.positive} \
+            -negfasta ../../../../{input.negative}
+        GraphProt.pl --action predict -model GraphProt.model -fasta ../../../../{input.test}
         mv GraphProt.predictions prediction.out
         """
 
