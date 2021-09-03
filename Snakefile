@@ -91,7 +91,7 @@ rule run_deepbind:
     conda:
         "envs/deepbind.yaml"
     log:
-        "logs/out/deepbind/{dataset}_deepbind_run.log"
+        "logs/out/deepbind/{dataset}_fold-{fold}_deepbind_run.log"
     script:
         "methods/DeepBind_with_Tensorflow/deepbind.py"
 
@@ -110,7 +110,7 @@ rule run_ideeps:
     conda:
         "envs/ideeps.yaml"
     log:
-        "logs/out/ideeps/{dataset}_iDeepS_run.log"
+        "logs/out/ideeps/{dataset}_fold-{fold}_iDeepS_run.log"
     script:
         "scripts/run_ideeps.py"
 
@@ -129,7 +129,7 @@ rule run_graphprot2:
     benchmark:
         "out/{dataset}/graphprot2/benchmark.txt"
     log:
-        "logs/out/graphprot2/{dataset}_graphprot2_run.log"
+        "logs/out/graphprot2/{dataset}_fold-{fold}_graphprot2_run.log"
     script:
         "scripts/run_graphprot2.py"
 
@@ -146,7 +146,7 @@ rule run_graphprot:
     conda:
         "envs/graphprot.yaml"
     log:
-        "logs/out/graphprot2/{dataset}_graphprot_run.log"
+        "logs/out/graphprot2/{dataset}_fold-{fold}_graphprot_run.log"
     shell:
         """
         cd out/{wildcards.dataset}/graphprot/fold-{wildcards.fold}
