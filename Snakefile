@@ -127,7 +127,7 @@ rule run_graphprot2:
         model="out/{dataset}/fold-{fold}/graphprot2/trained_model/final.model",
         prediction="out/{dataset}/fold-{fold}/graphprot2/prediction/whole_site_scores.out"
     benchmark:
-        "out/{dataset}/graphprot2/benchmark.txt"
+        "out/{dataset}/fold-{fold}/graphprot2/benchmark.txt"
     log:
         "logs/out/graphprot2/{dataset}_fold-{fold}_graphprot2_run.log"
     script:
@@ -142,7 +142,7 @@ rule run_graphprot:
         model="out/{dataset}/fold-{fold}/graphprot/GraphProt.model",
         prediction="out/{dataset}/fold-{fold}/graphprot/prediction.out"
     benchmark:
-        "out/{dataset}/graphprot/benchmark.txt"
+        "out/{dataset}/fold-{fold}/graphprot/benchmark.txt"
     conda:
         "envs/graphprot.yaml"
     log:
