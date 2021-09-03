@@ -7,13 +7,13 @@ DB="out/{dataset}/db.csv" # Database for data about the samples
 
 rule preprocess_all:
     input:
-        "preprocessed/RBFOX2_HepG2_iDeepS/train_deepbind.seq.gz",
-        "preprocessed/RBFOX2_HepG2_iDeepS/test_deepbind.seq.gz",
-        "preprocessed/RBFOX2_HepG2_iDeepS/train_ideeps.fa.gz",
-        "preprocessed/RBFOX2_HepG2_iDeepS/test_ideeps.fa.gz",
-        "preprocessed/RBFOX2_HepG2_iDeepS/train_graphprot2_positive.fasta",
-        "preprocessed/RBFOX2_HepG2_iDeepS/train_graphprot2_negative.fasta",
-        "preprocessed/RBFOX2_HepG2_iDeepS/test_graphprot2.fasta"
+        expand("out/{dataset}/data/{fold}_train_deepbind.seq.gz", dataset=["RBFOX2_HepG2_iDeepS"], fold=[i for i in range(5)]),
+        expand("out/{dataset}/data/{fold}_test_deepbind.seq.gz", dataset=["RBFOX2_HepG2_iDeepS"], fold=[i for i in range(5)]),
+        expand("out/{dataset}/data/{fold}_train_ideeps.fa.gz", dataset=["RBFOX2_HepG2_iDeepS"], fold=[i for i in range(5)]),
+        expand("out/{dataset}/data/{fold}_test_ideeps.fa.gz", dataset=["RBFOX2_HepG2_iDeepS"], fold=[i for i in range(5)]),
+        expand("out/{dataset}/data/{fold}_train_graphprot_positive.fasta", dataset=["RBFOX2_HepG2_iDeepS"], fold=[i for i in range(5)]),
+        expand("out/{dataset}/data/{fold}_train_graphprot_negative.fasta", dataset=["RBFOX2_HepG2_iDeepS"], fold=[i for i in range(5)]),
+        expand("out/{dataset}/data/{fold}_test_graphprot.fasta", dataset=["RBFOX2_HepG2_iDeepS"], fold=[i for i in range(5)])
 
 rule preprocess_dataset:
     input:
@@ -33,10 +33,13 @@ rule preprocess_deepbind:
     input:
         data=DB,
     params:
-        method="deepbind"
+        method="deepbind",
+        fold="{wildcards.fold}"
     output:
-        train="out/{dataset}/data/train_deepbind.seq.gz",
-        test="out/{dataset}/data/test_deepbind.seq.gz",
+        train=temp("out/{dataset}/data/{fold}_train_deepbind.seq.gz"),
+        test=temp("out/{dataset}/data/{fold}_test_deepbind.seq.gz"),
+    log:
+        "logs/preprocess/{dataset}_fold-{fold}_preprocess_deepbind.log"
     script:
         "scripts/preprocess_for_methods.py"
 
@@ -44,10 +47,13 @@ rule preprocess_ideeps:
     input:
         data=DB,
     params:
-        method="ideeps"
+        method="ideeps",
+        fold="{wildcards.fold}"
     output:
-        train="out/{dataset}/data/train_ideeps.fa.gz",
-        test="out/{dataset}/data/test_ideeps.fa.gz",
+        train=temp("out/{dataset}/data/{fold}_train_ideeps.fa.gz"),
+        test=temp("out/{dataset}/data/{fold}_test_ideeps.fa.gz"),
+    log:
+        "logs/preprocess/{dataset}_fold-{fold}_preprocess_deepbind.log"
     script:
         "scripts/preprocess_for_methods.py"
 
@@ -57,11 +63,14 @@ rule preprocess_graphprot:
     input:
         data=DB,
     params:
-        method="graphprot"
+        method="graphprot",
+        fold="{wildcards.fold}"
     output:
-        positive="out/{dataset}/data/train_graphprot_positive.fasta",
-        negative="out/{dataset}/data/train_graphprot_negative.fasta",
-        test="out/{dataset}/data/test_graphprot.fasta"
+        positive=temp("out/{dataset}/data/{fold}_train_graphprot_positive.fasta"),
+        negative=temp("out/{dataset}/data/{fold}_train_graphprot_negative.fasta"),
+        test=temp("out/{dataset}/data/{fold}_test_graphprot.fasta")
+    log:
+        "logs/preprocess/{dataset}_fold-{fold}_preprocess_deepbind.log"
     script:
         "scripts/preprocess_for_methods.py"
 

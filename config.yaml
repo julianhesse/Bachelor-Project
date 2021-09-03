@@ -14,5 +14,7 @@ prediction_range:
         graphprot: 'open',
         graphprot2: [-1,1],
     }
-tarball_dir: "/home/icb/julian.hesse/"
-image_dir: "/localscratch/julian.hesse/"
+#tarball_dir: "/home/icb/julian.hesse/"
+#image_dir: "/localscratch/julian.hesse/"
+tarball_dir: "/var/tmp/"
+image_dir: "/var/tmp/"

@@ -1,5 +1,9 @@
 import pandas as pd
 import numpy as np
+import logging
+
+logging.basicConfig(filename=snakemake.log[0], level=logging.INFO,
+        format='%(asctime)s %(name)s - %(levelname)s: %(message)s')
 
 seqs = [] # stores dna/rna sequences
 descriptors = [] # stores description of sequences
@@ -13,7 +17,7 @@ with open(snakemake.input[0], 'r') as fasta_file:
         else:
             seqs.append(line[:-1])
             classes.append(1)
-print('Positives parced...')
+logging.info('Positives parced...')
 
 # parse file of negatives
 with open(snakemake.input[1], 'r') as fasta_file:
@@ -23,7 +27,7 @@ with open(snakemake.input[1], 'r') as fasta_file:
         else:
             seqs.append(line[:-1])
             classes.append(0)
-print('Negatives parced...')
+logging.info('Negatives parced...')
 
 df = pd.DataFrame(data={
     'seq': seqs,
@@ -34,34 +38,33 @@ df = pd.DataFrame(data={
 # remove sequences with only N
 df = df[df['seq'].str.match(r'^N+N$') == False]
 if sum(df['seq'].str.match(r'N+')) > 0:
-    print('Sequences with N remaining:')
-    print(df['seq'].str.match(r'^N+N$'))
-    print()
+    logging.info('Sequences with N remaining:')
+    logging.info(df['seq'].str.match(r'^N+N$'))
 else:
-    print('Sequences with only N removed...')
+    logging.info('Sequences with only N removed...')
 
 # remove duplicates
 num_dup = sum(df.duplicated())
 num_dup_chrom = sum(df.duplicated(subset=['descriptor']))
 
-print('Number of duplicates:', num_dup)
-print('Number of duplicates of chromosomes:', num_dup_chrom)
+logging.info('Number of duplicates: %d', num_dup)
+logging.info('Number of duplicates of chromosomes: %d', num_dup_chrom)
 
 if snakemake.config['drop_duplicates']:
     # only drop duplicate sequences with the same class
-    print('Dropped duplicates...')
+    logging.info('Dropped duplicates...')
     df = df.drop_duplicates()
 else:
-    print('No duplicates dropped...')
+    logging.info('No duplicates dropped...')
 
 if snakemake.config['drop_duplicate_chromosomes']:
     # drop all duplicate sequences
     # keeps positive versions of the chromosome
     # because positives are first in the dataframe
-    print('Dropped duplicate chromosomes')
+    logging.info('Dropped duplicate chromosomes')
     df = df.drop_duplicates(subset=['descriptor'])
 else:
-    print('No duplicate chromosomes dropped...')
+    logging.info('No duplicate chromosomes dropped...')
 
 df.reset_index(drop=True, inplace=True)
 
@@ -69,7 +72,7 @@ df.reset_index(drop=True, inplace=True)
 # perserve ratio of classes in folds
 
 folds = snakemake.params['folds']
-print(f'Partition dataset into {folds} folds ...')
+logging.info(f'Partition dataset into {folds} folds ...')
 
 ids_pos = df[df["class"] == 1].index.to_numpy()
 ids_neg = df[df["class"] == 0].index.to_numpy()
@@ -88,18 +91,18 @@ fold_column = np.zeros(len(df), dtype=int)
 for i, ids in enumerate(folds_ids):
     fold_column[ids] = i
 
-print("Size of folds:")
+logging.info("Size of folds:")
 unique, counts = np.unique(fold_column, return_counts=True)
-print(dict(zip(unique, counts)))
+logging.info(dict(zip(unique, counts)))
 
 df['fold'] = fold_column
 
-print(df)
+logging.info(df)
 
-print('Folds are defined...')
+logging.info('Folds are defined...')
 
 
 # write remaining entries to csv
 df.to_csv(snakemake.output[0])
-print('CSV file created!')
-print('Dataset preprocessed!')
+logging.info('CSV file created!')
+logging.info('Dataset preprocessed!')
