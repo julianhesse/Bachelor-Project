@@ -65,10 +65,8 @@ for i in range(folds):
     axs[i+1,0].plot(fpr, tpr, color='darkorange',
              lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
     axs[i+1,0].plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-    # axs[i+1,0].set_xlim([0.0, 1.0])
-    # axs[i+1,0].set_ylim([0.0, 1.05])
-    # axs[i+1,0].set_xlabel('False Positive Rate')
-    # axs[i+1,0].set_ylabel('True Positive Rate')
+    axs[i+1,0].set_xlabel('False Positive Rate')
+    axs[i+1,0].set_ylabel('True Positive Rate')
     axs[i+1,0].set_title(f'ROC Fold-{i}')
     axs[i+1,0].legend(loc="lower right")
 
@@ -77,10 +75,8 @@ for i in range(folds):
              lw=lw, label='Fold %d' % i)
     axs[i+1,1].plot(recall, prec,
              lw=lw, label='PR curve (AP = %0.2f)' % average_precision)
-    # axs[i+1,1].set_xlim([-0.1, 1.1])
-    # axs[i+1,1].set_ylim([0.0, 1.05])
-    # axs[i+1,1].set_xlabel('Recall')
-    # axs[i+1,1].set_ylabel('Precision')
+    axs[i+1,1].set_xlabel('Recall')
+    axs[i+1,1].set_ylabel('Precision')
     axs[i+1,1].set_title(f'PR Fold-{i}')
     axs[i+1,1].legend(loc="lower left")
 
