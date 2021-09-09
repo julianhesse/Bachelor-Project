@@ -1,9 +1,11 @@
+import os
+
 configfile: "config.yaml"
 
+DATA_FILE="out/{dataset, [A-Za-z0-9_]+}/db.csv" # Database for data about the samples
+DATASETS=os.listdir('datasets')
 
 #### preprocessing #####
-
-DATA_FILE="out/{dataset, [A-Za-z0-9_]+}/db.csv" # Database for data about the samples
 
 rule preprocess_all:
     input:
@@ -78,6 +80,7 @@ rule preprocess_graphprot:
 
 #### train & predict #####
 
+
 rule run_deepbind:
     input:
         train="out/{dataset}/data/{fold}_train_deepbind.seq.gz",
@@ -96,7 +99,6 @@ rule run_deepbind:
         "logs/out/deepbind/{dataset}_fold-{fold, [0-9]+}_deepbind_run.log"
     script:
         "methods/DeepBind_with_Tensorflow/deepbind.py"
-
 
 rule run_ideeps:
     input:
@@ -217,6 +219,8 @@ rule aggregate_dataset_predictions:
 
 
 #### evaluate predictions ####
+
+
 rule classification_report:
     input:
         "out/{dataset}/results/predictions.csv"
@@ -233,13 +237,28 @@ rule classification_graphs:
     output:
         "out/{dataset}/reports/{method}_roc_pr_curve.png"
     params:
-        method="{method}"
+        method="{method}",
+        scale=5
     script:
         "scripts/classification_graphs.py"
+
+rule performance_comp:
+    input:
+        "out/{dataset}/results/predictions.csv"
+    output:
+        "out/{dataset}/reports/performance_comp.png"
+    params:
+        methods=config['methods'],
+        scale=4
+    script:
+        "scripts/performance_comp.py"
+
 
 rule report_all:
     input:
         expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_report.txt", method=config['methods'])
+        expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_roc_pr_curve.png", method=config['methods'])
+        expand("out/RBFOX2_HepG2_iDeepS/reports/performance_comp.png", method=config['methods'])
 
 def my_func(wildcards):
     print('Wildcards:')
@@ -248,17 +267,21 @@ def my_func(wildcards):
         print("out/{wildcards.dataset}/fold-{fold, [0-9]+}/".format(wildcards=wildcards, fold=i))
     return {}
 
+#import os
+
+#DATASET_FOLDER="datasets/{dataset}"
+#DATASETS=os.listdir('datasets')
+
 #rule test:
     #input:
-        #unpack(my_func),
-        #pred=expand('out/RBFOX2_HepG2_iDeepS/{method}/benchmark.txt', method=config['methods'])
-    #params:
-        #folds=glob_wildcards('out/{dataset}/fold-{fold, [0-9]+}/{method}/benchmark.txt').fold
-    #output:
-        #'datasets/{dataset}/positive.fasta'
+        #datasets=expand(DATASET_FOLDER, dataset=DATASETS)
+        ##unpack(my_func),
+        ##pred=expand('out/RBFOX2_HepG2_iDeepS/{method}/benchmark.txt', method=config['methods'])
+    ##params:
+        ##folds=glob_wildcards('out/{dataset}/fold-{fold, [0-9]+}/{method}/benchmark.txt').fold
+    ##output:
+        ##'out/{dataset}/done'
     #run:
-        #print(input['pred'], type(input['pred']))
-        #print(list(input['pred']))
-        #print(input)
-        #for i in input['pred']:
-            #print(i)
+        #print(input['datasets'])
+        #print(list(input['datasets']))
+        #print('Datasets:', DATASETS)

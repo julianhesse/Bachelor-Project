@@ -21,7 +21,7 @@ print('Data loaded')
 # create graph
 # first row is for all graphs combined
 # rows after that are for folds
-scale=5
+scale=snakemake.params['scale']
 fig, axs = plt.subplots(folds + 1, 2, sharex='col', sharey='col', figsize=(scale*2, scale*(folds)))
 
 # prepare plots
