@@ -29,11 +29,11 @@ def write_graphprot(data, file):
 if snakemake.params['method'] == 'deepbind':
     logging.info('Writing files for DeepBind...')
 
-    data = df[df['fold'] != snakemake.wildcards['fold']]
+    data = df[df['fold'] != int(snakemake.wildcards['fold'])]
     write_deepbind(data, snakemake.output['train'])
     logging.info('Training file written!')
 
-    data = df[df['fold'] == snakemake.wildcards['fold']]
+    data = df[df['fold'] == int(snakemake.wildcards['fold'])]
     write_deepbind(data, snakemake.output['test'])
     logging.info('Test file written!')
 
@@ -41,11 +41,14 @@ if snakemake.params['method'] == 'deepbind':
 elif snakemake.params['method'] == 'ideeps':
     logging.info('Writing files for iDeepS...')
 
-    data = df[df['fold'] != snakemake.wildcards['fold']]
+    data = df[df['fold'] != int(snakemake.wildcards['fold'])]
     write_ideeps(data, snakemake.output['train'])
     logging.info('Training file written!')
 
-    data = df[df['fold'] == snakemake.wildcards['fold']]
+    data = df[df['fold'] == int(snakemake.wildcards['fold'])]
+    print(snakemake.wildcards['fold'], type(snakemake.wildcards['fold']))
+    print(data)
+    print(df)
     write_ideeps(data, snakemake.output['test'])
     logging.info('Test file written!')
 
@@ -57,19 +60,19 @@ elif snakemake.params['method'] == 'graphprot':
     # no duplicated chromosome names are allowed -> use index as identifier
 
     # write positive file
-    data = df[df['fold'] != snakemake.wildcards['fold']]
+    data = df[df['fold'] != int(snakemake.wildcards['fold'])]
     data = data[data['class'] == 1]
     write_graphprot(data, snakemake.output['positive'])
     logging.info('Positive File written!')
 
     # write negative file
-    data = df[df['fold'] != snakemake.wildcards['fold']]
+    data = df[df['fold'] != int(snakemake.wildcards['fold'])]
     data = data[data['class'] == 0]
     write_graphprot(data, snakemake.output['negative'])
     logging.info('Negative file written!')
 
     # write test file
-    data = df[df['fold'] == snakemake.wildcards['fold']]
+    data = df[df['fold'] == int(snakemake.wildcards['fold'])]
     write_graphprot(data, snakemake.output['test'])
     with open(snakemake.output['test'], 'w', newline='') as f:
         for descriptor, seq in zip(data.index, data['seq']):

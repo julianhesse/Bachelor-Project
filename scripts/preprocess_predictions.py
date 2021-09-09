@@ -26,9 +26,9 @@ if prediction_range == 'open':
     predictions = 1 / (1+ np.exp(-predictions))
 elif prediction_range != [0, 1]:
     arr = predictions
-    arr = arr - prediction_range[0]
+    arr = arr - prediction_range[0] # shift range to [0,...]
     scale = prediction_range[1] - prediction_range[0]
-    arr = arr / scale
+    arr = arr / scale # scale range to [0,1]
     
     predictions = arr
 

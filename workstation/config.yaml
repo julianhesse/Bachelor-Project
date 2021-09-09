@@ -1,0 +1,5 @@
+jobs: 8
+default-resources: [cpus=1, mem_mb=1000, time_min=5, gpu=0]
+resources: [cpus=4, mem_mb=12000, gpu=1]
+use-conda: True
+latency-wait: 15

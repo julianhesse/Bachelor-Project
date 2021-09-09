@@ -1,0 +1,9 @@
+cluster: "sbatch --time={resources.time_min} --mem={resources.mem_mb}
+            -c {resources.cpus} -o slurm/logs/{rule}_{wildcards}
+            -e slurm/logs/{rule}_{wildcards} -J snakemake_{rule}
+            -p interactive_gpu_p --exclude=supergpu05
+            --gres=gpu:{resources.gpu}
+            --nice=1000"
+jobs: 15
+default-resources: [cpus=1, mem_mb=1000, time_min=5, gpu=0]
+resources: [cpus=4, mem_mb=16000, gpu=1]

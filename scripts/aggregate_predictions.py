@@ -2,9 +2,15 @@ import pandas as pd
 
 ## get the data from dataset
 # but only the test set
-df = pd.read_csv(snakemake.input['dataset'], index_col=0)
+df = pd.read_csv(snakemake.input['data'], index_col=0)
 
-df = df[df['test'] == True]
+# get fold
+fold = int(snakemake.wildcards['fold'])
+
+# get test samples
+assert fold in df['fold'].unique(), 'No fold for tests!'
+df = df[df['fold'] == fold]
+df = df.drop(columns=['seq', 'descriptor', 'fold']) # save space :)
 
 ## get the prediction values
 methods = snakemake.config['methods']

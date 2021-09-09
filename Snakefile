@@ -3,7 +3,7 @@ configfile: "config.yaml"
 
 #### preprocessing #####
 
-DB="out/{dataset}/db.csv" # Database for data about the samples
+DATA_FILE="out/{dataset, [A-Za-z0-9_]+}/db.csv" # Database for data about the samples
 
 rule preprocess_all:
     input:
@@ -20,7 +20,7 @@ rule preprocess_dataset:
         positive="datasets/{dataset}/positive.fasta",
         negative="datasets/{dataset}/negative-1-2.fasta"
     output:
-        DB
+        DATA_FILE
     params:
         folds=config['folds'],
         seed=462
@@ -31,13 +31,13 @@ rule preprocess_dataset:
 
 rule preprocess_deepbind:
     input:
-        data=DB,
+        data=DATA_FILE,
     params:
         method="deepbind",
         fold="{wildcards.fold}"
     output:
-        train=temp("out/{dataset}/data/{fold}_train_deepbind.seq.gz"),
-        test=temp("out/{dataset}/data/{fold}_test_deepbind.seq.gz"),
+        train=temp("out/{dataset}/data/{fold, [0-9]+}_train_deepbind.seq.gz"),
+        test=temp("out/{dataset}/data/{fold, [0-9]+}_test_deepbind.seq.gz"),
     log:
         "logs/preprocess/{dataset}_fold-{fold}_preprocess_deepbind.log"
     script:
@@ -45,13 +45,13 @@ rule preprocess_deepbind:
 
 rule preprocess_ideeps:
     input:
-        data=DB,
+        data=DATA_FILE,
     params:
         method="ideeps",
         fold="{wildcards.fold}"
     output:
-        train=temp("out/{dataset}/data/{fold}_train_ideeps.fa.gz"),
-        test=temp("out/{dataset}/data/{fold}_test_ideeps.fa.gz"),
+        train=temp("out/{dataset}/data/{fold, [0-9]+}_train_ideeps.fa.gz"),
+        test=temp("out/{dataset}/data/{fold, [0-9]+}_test_ideeps.fa.gz"),
     log:
         "logs/preprocess/{dataset}_fold-{fold}_preprocess_deepbind.log"
     script:
@@ -61,14 +61,14 @@ rule preprocess_graphprot:
     # GraphProt and GraphProt2 can use the same format!
     # very nice :)
     input:
-        data=DB,
+        data=DATA_FILE,
     params:
         method="graphprot",
         fold="{wildcards.fold}"
     output:
-        positive=temp("out/{dataset}/data/{fold}_train_graphprot_positive.fasta"),
-        negative=temp("out/{dataset}/data/{fold}_train_graphprot_negative.fasta"),
-        test=temp("out/{dataset}/data/{fold}_test_graphprot.fasta")
+        positive=temp("out/{dataset}/data/{fold, [0-9]+}_train_graphprot_positive.fasta"),
+        negative=temp("out/{dataset}/data/{fold, [0-9]+}_train_graphprot_negative.fasta"),
+        test=temp("out/{dataset}/data/{fold, [0-9]+}_test_graphprot.fasta")
     log:
         "logs/preprocess/{dataset}_fold-{fold}_preprocess_deepbind.log"
     script:
@@ -85,13 +85,15 @@ rule run_deepbind:
     params:
         "out/{dataset}/fold-{fold}/deepbind/"
     output:
-        prediction="out/{dataset}/fold-{fold}/deepbind/prediction.out"
+        prediction="out/{dataset}/fold-{fold, [0-9]+}/deepbind/prediction.out"
     benchmark:
         "out/{dataset}/fold-{fold}/deepbind/benchmark.txt"
+    threads: 3
+    resources: gpu=1, mem_mb=4500, time_min=30
     conda:
         "envs/deepbind.yaml"
     log:
-        "logs/out/deepbind/{dataset}_fold-{fold}_deepbind_run.log"
+        "logs/out/deepbind/{dataset}_fold-{fold, [0-9]+}_deepbind_run.log"
     script:
         "methods/DeepBind_with_Tensorflow/deepbind.py"
 
@@ -103,10 +105,12 @@ rule run_ideeps:
     params:
         "out/{dataset}/fold-{fold}/ideeps/"
     output:
-        model="out/{dataset}/fold-{fold}/ideeps/model.pkl",
-        prediction="out/{dataset}/fold-{fold}/ideeps/prediction.out"
+        model="out/{dataset}/fold-{fold, [0-9]+}/ideeps/model.pkl",
+        prediction="out/{dataset}/fold-{fold, [0-9]+}/ideeps/prediction.out"
     benchmark:
         "out/{dataset}/fold-{fold}/ideeps/benchmark.txt"
+    threads: 3
+    resources: mem_mb=10000, time_min=40
     conda:
         "envs/ideeps.yaml"
     log:
@@ -124,10 +128,12 @@ rule run_graphprot2:
         conainer="charliecloud"
         #conainer="singularity"
     output:
-        model="out/{dataset}/fold-{fold}/graphprot2/trained_model/final.model",
-        prediction="out/{dataset}/fold-{fold}/graphprot2/prediction/whole_site_scores.out"
+        model="out/{dataset}/fold-{fold, [0-9]+}/graphprot2/trained_model/final.model",
+        prediction="out/{dataset}/fold-{fold, [0-9]+}/graphprot2/prediction/whole_site_scores.out"
     benchmark:
         "out/{dataset}/fold-{fold}/graphprot2/benchmark.txt"
+    threads: 3
+    resources: mem_mb=3000, time_min=200
     log:
         "logs/out/graphprot2/{dataset}_fold-{fold}_graphprot2_run.log"
     script:
@@ -135,21 +141,23 @@ rule run_graphprot2:
 
 rule run_graphprot:
     input:
-        positive="out/{dataset}/data/train_graphprot_positive.fasta",
-        negative="out/{dataset}/data/train_graphprot_negative.fasta",
-        test="out/{dataset}/data/test_graphprot.fasta"
+        positive="out/{dataset}/data/{fold}_train_graphprot_positive.fasta",
+        negative="out/{dataset}/data/{fold}_train_graphprot_negative.fasta",
+        test="out/{dataset}/data/{fold}_test_graphprot.fasta"
     output:
-        model="out/{dataset}/fold-{fold}/graphprot/GraphProt.model",
-        prediction="out/{dataset}/fold-{fold}/graphprot/prediction.out"
+        model="out/{dataset}/fold-{fold, [0-9]+}/graphprot/GraphProt.model",
+        prediction="out/{dataset}/fold-{fold, [0-9]+}/graphprot/prediction.out"
     benchmark:
         "out/{dataset}/fold-{fold}/graphprot/benchmark.txt"
+    threads: 3
+    resources: mem_mb=8000, time_min=45
     conda:
         "envs/graphprot.yaml"
     log:
-        "logs/out/graphprot2/{dataset}_fold-{fold}_graphprot_run.log"
+        "logs/out/graphprot/{dataset}_fold-{fold}_graphprot_run.log"
     shell:
         """
-        cd out/{wildcards.dataset}/graphprot/fold-{wildcards.fold}
+        cd out/{wildcards.dataset}/fold-{wildcards.fold}/graphprot
         GraphProt.pl --action train -fasta ../../../../{input.positive} \
             -negfasta ../../../../{input.negative}
         GraphProt.pl --action predict -model GraphProt.model -fasta ../../../../{input.test}
@@ -158,9 +166,9 @@ rule run_graphprot:
 
 rule output_graphtprot2:
     input:
-        "out/{dataset}/graphprot2/prediction/whole_site_scores.out"
+        "out/{dataset}/fold-{fold}/graphprot2/prediction/whole_site_scores.out"
     output:
-        temp("out/{dataset}/graphprot2/prediction.out")
+        temp("out/{dataset}/fold-{fold, [0-9]+}/graphprot2/prediction.out")
     shell:
         "cp {input} {output}"
 
@@ -168,38 +176,89 @@ rule output_graphtprot2:
 
 rule preprocess_prediction:
     input:
-        "out/{dataset}/{method}/prediction.out"
+        "out/{dataset}/fold-{fold}/{method}/prediction.out"
     params:
         method="{method}"
     output:
-        "out/{dataset}/results/{method}_prediction.out"
+        temp("out/{dataset}/fold-{fold, [0-9]+}/results/{method}_prediction.out")
     script:
         "scripts/preprocess_predictions.py"
 
-rule aggregate_predictions:
+
+rule aggregate_fold_predictions:
     input:
-        dataset="out/{dataset}/temp.csv",
-        deepbind="out/{dataset}/results/deepbind_prediction.out",
-        ideeps="out/{dataset}/results/ideeps_prediction.out",
-        graphprot="out/{dataset}/results/graphprot_prediction.out",
-        graphprot2="out/{dataset}/results/graphprot2_prediction.out"
+        data=DATA_FILE,
+        deepbind="out/{dataset}/fold-{fold}/results/deepbind_prediction.out",
+        ideeps="out/{dataset}/fold-{fold}/results/ideeps_prediction.out",
+        graphprot="out/{dataset}/fold-{fold}/results/graphprot_prediction.out",
+        graphprot2="out/{dataset}/fold-{fold}/results/graphprot2_prediction.out"
     output:
-        "out/{dataset}/results/results.csv"
+        temp("out/{dataset}/fold-{fold, [0-9]+}/results/predictions.csv")
     script:
         "scripts/aggregate_predictions.py"
+
+def all_fold_results(wildcards):
+    """
+    For every fold the prediction.csv file are saved in a dict according to the fold-number.
+    """
+    files = {}
+    for i in range(config['folds']):
+        prediction_csv = "out/{wildcards.dataset}/fold-{fold}/results/predictions.csv".format(wildcards=wildcards, fold=i)
+        files[str(i)] = prediction_csv
+    return files
+
+rule aggregate_dataset_predictions:
+    input:
+        unpack(all_fold_results)
+    output:
+        "out/{dataset}/results/predictions.csv"
+    script:
+        "scripts/aggregate_all_predictions.py"
+
 
 #### evaluate predictions ####
 rule classification_report:
     input:
-        "out/{dataset}/results/results.csv"
+        "out/{dataset}/results/predictions.csv"
     output:
         "out/{dataset}/reports/{method}_report.txt",
-        "out/{dataset}/reports/{method}_roc_pr_curve.png"
     params:
         method="{method}"
     script:
         "scripts/classification_report.py"
 
+rule classification_graphs:
+    input:
+        "out/{dataset}/results/predictions.csv"
+    output:
+        "out/{dataset}/reports/{method}_roc_pr_curve.png"
+    params:
+        method="{method}"
+    script:
+        "scripts/classification_graphs.py"
+
 rule report_all:
     input:
         expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_report.txt", method=config['methods'])
+
+def my_func(wildcards):
+    print('Wildcards:')
+    print(wildcards)
+    for i in range(config['folds']):
+        print("out/{wildcards.dataset}/fold-{fold, [0-9]+}/".format(wildcards=wildcards, fold=i))
+    return {}
+
+#rule test:
+    #input:
+        #unpack(my_func),
+        #pred=expand('out/RBFOX2_HepG2_iDeepS/{method}/benchmark.txt', method=config['methods'])
+    #params:
+        #folds=glob_wildcards('out/{dataset}/fold-{fold, [0-9]+}/{method}/benchmark.txt').fold
+    #output:
+        #'datasets/{dataset}/positive.fasta'
+    #run:
+        #print(input['pred'], type(input['pred']))
+        #print(list(input['pred']))
+        #print(input)
+        #for i in input['pred']:
+            #print(i)
