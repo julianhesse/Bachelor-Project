@@ -107,6 +107,11 @@ def use_charliecloud():
         else:
             print('Tarball for image already exists!\n')
 
+        # Check if image_dir exits
+        if not os.path.isdir(snakemake.config['image_dir'][:-1]):
+            # if not then create it
+            os.mkdir(snakemake.config['image_dir'][:-1])
+
         # Unpack tar:
         # ch-tar2dir /var/tmp/graphprot2.tar.gz /var/tmp
         process = subprocess.Popen(['ch-tar2dir', f'{snakemake.config["tarball_dir"]}graphprot2.tar.gz', f'{snakemake.config["image_dir"]}'],

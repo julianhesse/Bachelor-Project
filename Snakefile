@@ -92,7 +92,7 @@ rule run_deepbind:
     benchmark:
         "out/{dataset}/fold-{fold}/deepbind/benchmark.txt"
     threads: 3
-    resources: gpu=1, mem_mb=4500, time_min=30
+    resources: gpu=1, mem_mb=4500, time_min=40
     conda:
         "envs/deepbind.yaml"
     log:
@@ -112,7 +112,7 @@ rule run_ideeps:
     benchmark:
         "out/{dataset}/fold-{fold}/ideeps/benchmark.txt"
     threads: 3
-    resources: mem_mb=10000, time_min=40
+    resources: mem_mb=10000, time_min=60
     conda:
         "envs/ideeps.yaml"
     log:
@@ -135,7 +135,7 @@ rule run_graphprot2:
     benchmark:
         "out/{dataset}/fold-{fold}/graphprot2/benchmark.txt"
     threads: 3
-    resources: mem_mb=3000, time_min=200
+    resources: mem_mb=3000, time_min=300
     log:
         "logs/out/graphprot2/{dataset}_fold-{fold}_graphprot2_run.log"
     script:
@@ -152,7 +152,7 @@ rule run_graphprot:
     benchmark:
         "out/{dataset}/fold-{fold}/graphprot/benchmark.txt"
     threads: 3
-    resources: mem_mb=8000, time_min=45
+    resources: mem_mb=8000, time_min=60
     conda:
         "envs/graphprot.yaml"
     log:
@@ -256,8 +256,8 @@ rule performance_comp:
 
 rule report_all:
     input:
-        expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_report.txt", method=config['methods'])
-        expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_roc_pr_curve.png", method=config['methods'])
+        expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_report.txt", method=config['methods']),
+        expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_roc_pr_curve.png", method=config['methods']),
         expand("out/RBFOX2_HepG2_iDeepS/reports/performance_comp.png", method=config['methods'])
 
 def my_func(wildcards):
