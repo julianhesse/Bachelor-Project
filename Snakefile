@@ -140,7 +140,7 @@ rule run_graphprot2:
         negative="out/{dataset}/data/{fold}_train_graphprot_negative.fasta",
         test="out/{dataset}/data/{fold}_test_graphprot.fasta"
     params:
-        "out/{dataset}/fold-{fold}/graphprot2",
+        out="out/{dataset}/fold-{fold}/graphprot2",
         conainer="charliecloud"
         #conainer="singularity"
     output:
@@ -149,11 +149,19 @@ rule run_graphprot2:
     benchmark:
         "out/{dataset}/fold-{fold}/graphprot2/benchmark.txt"
     threads: 3
-    resources: mem_mb=3000, time_min=300
+    resources: gpu=1, mem_mb=3000, time_min=60
+    conda:
+        "envs/graphprot2.yaml"
     log:
         "logs/out/graphprot2/{dataset}_fold-{fold}_graphprot2_run.log"
-    script:
-        "scripts/run_graphprot2.py"
+    shell:
+        """
+        graphprot2 gt --in {input.positive} --neg-in {input.negative} --out {params.out}/train_data
+        graphprot2 train --in {params.out}/train_data --out {params.out}/trained_model
+
+        graphprot2 gp --in {input.test} --train-in {params.out}/trained_model --out {params.out}/prediction_data
+        graphprot2 predict --in {params.out}/prediction_data --train-in {params.out}/trained_model --out {params.out}/prediction --mode 1
+        """
 
 rule run_graphprot:
     input:
@@ -275,6 +283,15 @@ rule report_all:
         expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_roc_pr_curve.png",
                 method=config['methods']),
         expand("out/RBFOX2_HepG2_iDeepS/reports/performance_comp.png",
+                method=config['methods'])
+
+rule report_all_test:
+    input:
+        expand("out/Test/reports/{method}_report.txt",
+                method=config['methods']),
+        expand("out/Test/reports/{method}_roc_pr_curve.png",
+                method=config['methods']),
+        expand("out/Test/reports/performance_comp.png",
                 method=config['methods'])
 
 def my_func(wildcards):
