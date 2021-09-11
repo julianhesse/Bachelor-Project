@@ -1,9 +1,23 @@
 import os
 
+print(
+"""
+  ______                 _                          _    
+  | ___ \               | |                        | |   
+  | |_/ / ___ _ __   ___| |__  _ __ ___   __ _ _ __| | __
+  | ___ \/ _ \ '_ \ / __| '_ \| '_ ` _ \ / _` | '__| |/ /
+  | |_/ /  __/ | | | (__| | | | | | | | | (_| | |  |   < 
+  \____/ \___|_| |_|\___|_| |_|_| |_| |_|\__,_|_|  |_|\_\\
+
+"""
+)
+
 configfile: "config.yaml"
 
 DATA_FILE="out/{dataset, [A-Za-z0-9_]+}/db.csv" # Database for data about the samples
+DATA_FILE_="out/{dataset}/db.csv" # Database for data about the samples
 DATASETS=os.listdir('datasets')
+
 
 #### preprocessing #####
 
@@ -33,7 +47,7 @@ rule preprocess_dataset:
 
 rule preprocess_deepbind:
     input:
-        data=DATA_FILE,
+        data=DATA_FILE_,
     params:
         method="deepbind",
         fold="{wildcards.fold}"
@@ -47,7 +61,7 @@ rule preprocess_deepbind:
 
 rule preprocess_ideeps:
     input:
-        data=DATA_FILE,
+        data=DATA_FILE_,
     params:
         method="ideeps",
         fold="{wildcards.fold}"
@@ -63,7 +77,7 @@ rule preprocess_graphprot:
     # GraphProt and GraphProt2 can use the same format!
     # very nice :)
     input:
-        data=DATA_FILE,
+        data=DATA_FILE_,
     params:
         method="graphprot",
         fold="{wildcards.fold}"
@@ -189,7 +203,7 @@ rule preprocess_prediction:
 
 rule aggregate_fold_predictions:
     input:
-        data=DATA_FILE,
+        data=DATA_FILE_,
         deepbind="out/{dataset}/fold-{fold}/results/deepbind_prediction.out",
         ideeps="out/{dataset}/fold-{fold}/results/ideeps_prediction.out",
         graphprot="out/{dataset}/fold-{fold}/results/graphprot_prediction.out",
@@ -256,9 +270,12 @@ rule performance_comp:
 
 rule report_all:
     input:
-        expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_report.txt", method=config['methods']),
-        expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_roc_pr_curve.png", method=config['methods']),
-        expand("out/RBFOX2_HepG2_iDeepS/reports/performance_comp.png", method=config['methods'])
+        expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_report.txt",
+                method=config['methods']),
+        expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_roc_pr_curve.png",
+                method=config['methods']),
+        expand("out/RBFOX2_HepG2_iDeepS/reports/performance_comp.png",
+                method=config['methods'])
 
 def my_func(wildcards):
     print('Wildcards:')
