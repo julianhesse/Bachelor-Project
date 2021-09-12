@@ -11,11 +11,23 @@ subprocess.run(['python', 'setup.py', 'build_ext', '-I$CONDA_PREFIX/include/open
 subprocess.run(['python', 'setup.py', 'install'])
 os.chdir('../')
 
+def clean_up():
+    print('Clean up ...')
+    if os.path.isfile('structure.gz'):
+        os.remove('structure.gz')
+        print('Cleaned up structures.gz')
+    else:
+        print('Nothing to clean up')
+
+    data_file_dir = os.path.dirname('../../{snakemake.input["train"]}')
+    if os.path.isfile(data_file_dir + '/structure.gz'):
+        os.remove(data_file_dir + '/structure.gz')
+        print('Cleaned up %s/structures.gz' % data_file_dir)
+    else:
+        print('Nothing to clean up elsewhere')
+
 # clean up
-print('Clean up ...')
-if os.path.isfile('structure.gz'):
-    os.remove('structure.gz')
-print('Cleaned up structures.gz')
+clean_up()
 
 print('Starts training iDeepS...')
 # python ideeps.py --train=True --data_file=datasets/clip/10_PARCLIP_ELAVL1A_hg19/30000/training_sample_0/sequences.fa.gz --model_dir=models
@@ -37,10 +49,14 @@ while True:
 print('\nTraining finished!\n')
 
 # clean up again
-print('Clean up ...')
-if os.path.isfile('structure.gz'):
-    os.remove('structure.gz')
-print('Cleaned up structures.gz')
+clean_up()
+
+data_file_dir = os.path.dirname('../../{snakemake.input["train"]}')
+if os.path.isfile(data_file_dir + '/structure.gz'):
+    os.remove(data_file_dir + '/structure.gz')
+    print('Cleaned up %s/structures.gz' % data_file_dir)
+else:
+    print('Nothing to clean up')
 
 # python ideeps.py --predict=True --data_file=datasets/clip/10_PARCLIP_ELAVL1A_hg19/30000/test_sample_0/sequences.fa.gz --model_dir=models --out_file=YOUR_OUTFILE
 print('Starts predicting with iDeepS...')
@@ -62,7 +78,5 @@ while True:
 
 print('Prediction finished!')
 
-# clean up
-print('Clean up ...')
-subprocess.run(['rm', 'structure.gz'])
-print('Cleaned up structures.gz')
+# clean up again
+clean_up()
