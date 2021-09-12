@@ -13,3 +13,8 @@ For the snakemake conda environment use:
 
 Also you need to configure the keras backend file `~/.keras/keras.json`:
 * change `"backend": "tensorflow"`to `"backend": "theano"`
+
+## Note
+
+* I changed DeepBind so it takes variables from snakemake for running
+* I changed iDeepS to save the file `structure.gz` in model_dir instead of `./` (by default `methods/iDeepS`). This makes parallel execution more easy!
