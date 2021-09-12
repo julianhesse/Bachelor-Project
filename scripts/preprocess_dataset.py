@@ -1,39 +1,80 @@
 import pandas as pd
 import numpy as np
 import logging
+import re
 
 logging.basicConfig(filename=snakemake.log[0], level=logging.INFO,
         format='%(asctime)s %(name)s - %(levelname)s: %(message)s')
 
-seqs = [] # stores dna/rna sequences
-descriptors = [] # stores description of sequences
-classes = [] # stores 1 for positive and 0 for negative
+def read_fasta(file):
+    s = [] # stores dna/rna sequences
+    d = [] # stores description of sequences
+    with open(file, 'r') as fasta_file:
+        for line in fasta_file:
+            if line[0] == '>':
+                d.append(line[:-1])
+            else:
+                s.append(line[:-1])
+    return d, s
 
-# parse file of positives
-with open(snakemake.input[0], 'r') as fasta_file:
-    for line in fasta_file:
-        if line[0] == '>':
-            descriptors.append(line[:-1])
-        else:
-            seqs.append(line[:-1])
-            classes.append(1)
-logging.info('Positives parced...')
+if snakemake.params['folds'] == 'manual':
+    seqs = [] # stores dna/rna sequences
+    descriptors = [] # stores description of sequences
+    classes = [] # stores 1 for positive and 0 for negative
+    folds = [] # stores 1 for positive and 0 for negative
 
-# parse file of negatives
-with open(snakemake.input[1], 'r') as fasta_file:
-    for line in fasta_file:
-        if line[0] == '>':
-            descriptors.append(line[:-1])
-        else:
-            seqs.append(line[:-1])
-            classes.append(0)
-logging.info('Negatives parced...')
+    for fold, (pos, neg) in enumerate(zip(snakemake.input['positive'], snakemake.input['negative'])):
+        m = re.findall(r'(?<=fold-)[0-9]+', pos)
+        assert fold == int(m[0]) == int(m[1])
+        # parse file of positives
+        d, s = read_fasta(pos)
+        seqs += s
+        descriptors += d
+        classes += [1 for i in range(len(s))]
+        folds += [fold for i in range(len(s))]
+        logging.info(f'Positives from {pos} parced...')
 
-df = pd.DataFrame(data={
-    'seq': seqs,
-    'descriptor': descriptors,
-    'class': classes
-})
+        # parse file of negatives
+        d, s = read_fasta(neg)
+        seqs += s
+        descriptors += d
+        classes += [0 for i in range(len(s))]
+        folds += [fold for i in range(len(s))]
+        logging.info(f'Negatives from {neg} parced...')
+
+    df = pd.DataFrame(data={
+        'seq': seqs,
+        'descriptor': descriptors,
+        'class': classes,
+        'fold': folds
+    })
+
+else:
+    seqs = [] # stores dna/rna sequences
+    descriptors = [] # stores description of sequences
+    classes = [] # stores 1 for positive and 0 for negative
+
+    # parse file of positives
+    pos = snakemake.input['positive']
+    d, s = read_fasta(pos)
+    seqs += s
+    descriptors += d
+    classes += [1 for i in range(len(s))]
+    logging.info(f'Positives from {pos} parced...')
+
+    # parse file of negatives
+    neg = snakemake.input['negative']
+    d, s = read_fasta(neg)
+    seqs += s
+    descriptors += d
+    classes += [0 for i in range(len(s))]
+    logging.info(f'Negatives from {neg} parced...')
+
+    df = pd.DataFrame(data={
+        'seq': seqs,
+        'descriptor': descriptors,
+        'class': classes
+    })
 
 # remove sequences with only N
 df = df[df['seq'].str.match(r'^N+N$') == False]
@@ -71,36 +112,40 @@ df.reset_index(drop=True, inplace=True)
 # create folds
 # perserve ratio of classes in folds
 
-folds = snakemake.params['folds']
-logging.info(f'Partition dataset into {folds} folds ...')
+if 'fold' not in df.columns:
+    logging.info("Creating folds...")
+    folds = snakemake.params['folds']
+    logging.info(f'Partition dataset into {folds} folds ...')
 
-ids_pos = df[df["class"] == 1].index.to_numpy()
-ids_neg = df[df["class"] == 0].index.to_numpy()
+    ids_pos = df[df["class"] == 1].index.to_numpy()
+    ids_neg = df[df["class"] == 0].index.to_numpy()
 
-np.random.seed(snakemake.params['seed'])
-ids_pos = np.random.permutation(ids_pos)
-ids_neg = np.random.permutation(ids_neg)
+    np.random.seed(snakemake.params['seed'])
+    ids_pos = np.random.permutation(ids_pos)
+    ids_neg = np.random.permutation(ids_neg)
 
-folds_pos = np.array_split(ids_pos, folds)
-folds_neg = np.array_split(ids_neg, folds)
+    folds_pos = np.array_split(ids_pos, folds)
+    folds_neg = np.array_split(ids_neg, folds)
 
-folds_ids = [np.concatenate((pos,neg)) for pos, neg in zip(folds_pos, folds_neg)]
+    folds_ids = [np.concatenate((pos,neg)) for pos, neg in zip(folds_pos, folds_neg)]
 
-fold_column = np.zeros(len(df), dtype=int)
+    fold_column = np.zeros(len(df), dtype=int)
 
-for i, ids in enumerate(folds_ids):
-    fold_column[ids] = i
+    for i, ids in enumerate(folds_ids):
+        fold_column[ids] = i
+
+
+    df['fold'] = fold_column
+
+else:
+    logging.info("Folds exist...")
 
 logging.info("Size of folds:")
-unique, counts = np.unique(fold_column, return_counts=True)
+unique, counts = np.unique(df['fold'], return_counts=True)
 logging.info(dict(zip(unique, counts)))
 
-df['fold'] = fold_column
-
 logging.info(df)
-
 logging.info('Folds are defined...')
-
 
 # write remaining entries to csv
 df.to_csv(snakemake.output[0])

@@ -31,6 +31,23 @@ rule preprocess_all:
         expand("out/{dataset}/data/{fold}_train_graphprot_negative.fasta", dataset=["RBFOX2_HepG2_iDeepS"], fold=[i for i in range(5)]),
         expand("out/{dataset}/data/{fold}_test_graphprot.fasta", dataset=["RBFOX2_HepG2_iDeepS"], fold=[i for i in range(5)])
 
+rule preprocess_dataset_folds:
+    input:
+        positive=expand("datasets/{dataset}/{format}/fold-{fold}/positive.fold-{fold}.fasta",
+                dataset="{dataset}", format="{format}",
+                fold=[i for i in range(config['folds'])]),
+        negative=expand("datasets/{dataset}/{format}/fold-{fold}/negative-1-2.fold-{fold}.fasta",
+                dataset="{dataset}", format="{format}",
+                fold=[i for i in range(config['folds'])])
+    output:
+        "out/{dataset, [A-Za-z0-9_]+}_{format, [A-Za-z]+}/db.csv"
+    params:
+        folds='manual'
+    log:
+        "logs/preprocess/{dataset}_{format}_to_csv.log"
+    script:
+        "scripts/preprocess_dataset.py"
+
 rule preprocess_dataset:
     input:
         positive="datasets/{dataset}/positive.fasta",
@@ -126,7 +143,7 @@ rule run_ideeps:
     benchmark:
         "out/{dataset}/fold-{fold}/ideeps/benchmark.txt"
     threads: 3
-    resources: mem_mb=10000, time_min=60
+    resources: cpus=2, mem_mb=5000, time_min=60
     conda:
         "envs/ideeps.yaml"
     log:
@@ -149,7 +166,7 @@ rule run_graphprot2:
     benchmark:
         "out/{dataset}/fold-{fold}/graphprot2/benchmark.txt"
     threads: 3
-    resources: gpu=1, mem_mb=3000, time_min=60
+    resources: gpu=1, mem_mb=4000, time_min=60
     conda:
         "envs/graphprot2.yaml"
     log:
@@ -174,7 +191,7 @@ rule run_graphprot:
     benchmark:
         "out/{dataset}/fold-{fold}/graphprot/benchmark.txt"
     threads: 3
-    resources: mem_mb=8000, time_min=60
+    resources: mem_mb=4000, time_min=60
     conda:
         "envs/graphprot.yaml"
     log:
@@ -276,13 +293,17 @@ rule performance_comp:
         "scripts/performance_comp.py"
 
 
+
 rule report_all:
     input:
-        expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_report.txt",
+        expand("out/{dataset}/reports/{method}_report.txt",
+                dataset=config['datasets'],
                 method=config['methods']),
-        expand("out/RBFOX2_HepG2_iDeepS/reports/{method}_roc_pr_curve.png",
+        expand("out/{dataset}/reports/{method}_roc_pr_curve.png",
+                dataset=config['datasets'],
                 method=config['methods']),
-        expand("out/RBFOX2_HepG2_iDeepS/reports/performance_comp.png",
+        expand("out/{dataset}/reports/performance_comp.png",
+                dataset=config['datasets'],
                 method=config['methods'])
 
 rule report_all_test:
