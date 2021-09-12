@@ -19,12 +19,13 @@ def clean_up():
     else:
         print('Nothing to clean up')
 
-    data_file_dir = os.path.dirname('../../{snakemake.input["train"]}')
-    if os.path.isfile(data_file_dir + '/structure.gz'):
-        os.remove(data_file_dir + '/structure.gz')
-        print('Cleaned up %s/structures.gz' % data_file_dir)
+    model_dir = '../../' + snakemake.params[0]
+    print(model_dir + 'structure.gz')
+    if os.path.isfile(model_dir + 'structure.gz'):
+        os.remove(model_dir + 'structure.gz')
+        print('Cleaned up %sstructures.gz' % model_dir)
     else:
-        print('Nothing to clean up elsewhere')
+        print('Nothing to clean up at %s' % model_dir)
 
 # clean up
 clean_up()
