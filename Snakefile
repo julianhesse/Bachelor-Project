@@ -143,13 +143,13 @@ rule run_ideeps:
     benchmark:
         "out/{dataset}/fold-{fold}/ideeps/benchmark.txt"
     threads: 2
-    resources: cpus=2, mem_mb=14000, time_min=60, ideeps=1
+    resources: cpus=2, mem_mb=14000, time_min=120, ideeps=1
     conda:
         "envs/ideeps.yaml"
     log:
         "logs/out/ideeps/{dataset}_fold-{fold}_iDeepS_run.log"
-    script:
-        "scripts/run_ideeps.py"
+    shell:
+        "python scripts/run_ideeps.py {input.train} {input.test} {output.prediction} {params[0]}"
 
 rule run_graphprot2:
     input:
