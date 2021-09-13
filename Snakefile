@@ -123,7 +123,7 @@ rule run_deepbind:
     benchmark:
         "out/{dataset}/fold-{fold}/deepbind/benchmark.txt"
     threads: 3
-    resources: gpu=1, mem_mb=4500, time_min=40
+    resources: gpu=1, mem_mb=4500, time_min=40, partition=gpu_p, qos=gpu
     conda:
         "envs/deepbind.yaml"
     log:
@@ -142,8 +142,8 @@ rule run_ideeps:
         prediction="out/{dataset}/fold-{fold, [0-9]+}/ideeps/prediction.out"
     benchmark:
         "out/{dataset}/fold-{fold}/ideeps/benchmark.txt"
-    threads: 3
-    resources: cpus=2, mem_mb=5000, time_min=60
+    threads: 2
+    resources: cpus=2, mem_mb=14000, time_min=60
     conda:
         "envs/ideeps.yaml"
     log:
@@ -166,7 +166,7 @@ rule run_graphprot2:
     benchmark:
         "out/{dataset}/fold-{fold}/graphprot2/benchmark.txt"
     threads: 3
-    resources: gpu=1, mem_mb=4000, time_min=60
+    resources: gpu=1, mem_mb=4000, time_min=60, partition=gpu_p, qos=gpu
     conda:
         "envs/graphprot2.yaml"
     log:

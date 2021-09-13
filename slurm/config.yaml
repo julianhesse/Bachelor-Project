@@ -1,12 +1,13 @@
 cluster: "sbatch --time={resources.time_min} --mem={resources.mem_mb}
             -c {resources.cpus} -o slurm/logs/{rule}-{wildcards}-%j.out
             -e slurm/logs/{rule}-{wildcards}-%j.out -J smk-{rule}-{wildcards}
-            -p interactive_gpu_p --qos=interactive_gpu
+            -p {resources.partition} --qos={resources.qos}
+            --exclude=icb-gpusrv0[1-2],supergpu05
             --gres=gpu:{resources.gpu}
             --nice=1000"
 jobs: 15
-default-resources: [cpus=1, mem_mb=1000, time_min=5, gpu=0]
-resources: [cpus=6, mem_mb=20000, gpu=2]
+default-resources: [cpus=1, mem_mb=1000, time_min=5, gpu=0, partition=cpu_p, qos=normal]
+resources: [cpus=6, mem_mb=30000, gpu=2]
 restart-times: 3
 scheduler: greedy
 printshellcmds: True
