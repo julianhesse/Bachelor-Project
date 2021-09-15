@@ -143,13 +143,13 @@ rule run_ideeps:
     benchmark:
         "out/{dataset}/fold-{fold}/ideeps/benchmark.txt"
     threads: 2
-    resources: cpus=2, mem_mb=14000, time_min=120, ideeps=1
+    resources: cpus=2, mem_mb=5000, time_min=120, ideeps=0, gpu=1, partition="gpu_p", qos="gpu"
     conda:
         "envs/ideeps.yaml"
     log:
         "logs/out/ideeps/{dataset}_fold-{fold}_iDeepS_run.log"
     shell:
-        "python scripts/run_ideeps.py {input.train} {input.test} {output.prediction} {params[0]}"
+        "python scripts/run_ideeps.py {input.train} {input.test} {output.prediction} {params[0]} {wildcards.fold}"
 
 rule run_graphprot2:
     input:
@@ -191,7 +191,7 @@ rule run_graphprot:
     benchmark:
         "out/{dataset}/fold-{fold}/graphprot/benchmark.txt"
     threads: 3
-    resources: mem_mb=4000, time_min=60
+    resources: cpus=2, mem_mb=9000, time_min=240, partition="interactive_gpu_p", qos="interactive_gpu"
     conda:
         "envs/graphprot.yaml"
     log:
@@ -221,20 +221,28 @@ rule preprocess_prediction:
     params:
         method="{method}"
     output:
-        temp("out/{dataset}/fold-{fold, [0-9]+}/results/{method}_prediction.out")
+        temp("out/{dataset, [A-Za-z0-9_]+}/fold-{fold, [0-9]+}/results/{method}_prediction.out")
     script:
         "scripts/preprocess_predictions.py"
 
+def prediction_files(wildcards):
+    predictions = {}
+    dataset = wildcards.dataset
+    fold = wildcards.fold
+    for method in config['methods']:
+        predictions[method] = f"out/{dataset}/fold-{fold}/results/{method}_prediction.out"
+    return predictions
 
 rule aggregate_fold_predictions:
     input:
+        unpack(prediction_files),
         data=DATA_FILE_,
-        deepbind="out/{dataset}/fold-{fold}/results/deepbind_prediction.out",
-        ideeps="out/{dataset}/fold-{fold}/results/ideeps_prediction.out",
-        graphprot="out/{dataset}/fold-{fold}/results/graphprot_prediction.out",
-        graphprot2="out/{dataset}/fold-{fold}/results/graphprot2_prediction.out"
+        # deepbind="out/{dataset}/fold-{fold}/results/deepbind_prediction.out",
+        # ideeps="out/{dataset}/fold-{fold}/results/ideeps_prediction.out",
+        # graphprot="out/{dataset}/fold-{fold}/results/graphprot_prediction.out",
+        # graphprot2="out/{dataset}/fold-{fold}/results/graphprot2_prediction.out",
     output:
-        temp("out/{dataset}/fold-{fold, [0-9]+}/results/predictions.csv")
+        temp("out/{dataset, [A-Za-z0-9_]+}/fold-{fold, [0-9]+}/results/predictions.csv")
     script:
         "scripts/aggregate_predictions.py"
 
@@ -252,7 +260,7 @@ rule aggregate_dataset_predictions:
     input:
         unpack(all_fold_results)
     output:
-        "out/{dataset}/results/predictions.csv"
+        "out/{dataset, [A-Za-z0-9_]+}/results/predictions.csv"
     script:
         "scripts/aggregate_all_predictions.py"
 
@@ -264,7 +272,7 @@ rule classification_report:
     input:
         "out/{dataset}/results/predictions.csv"
     output:
-        "out/{dataset}/reports/{method}_report.txt",
+        "out/{dataset, [A-Za-z0-9_]+}/reports/{method}_report.txt",
     params:
         method="{method}"
     script:
@@ -274,7 +282,7 @@ rule classification_graphs:
     input:
         "out/{dataset}/results/predictions.csv"
     output:
-        "out/{dataset}/reports/{method}_roc_pr_curve.png"
+        "out/{dataset, [A-Za-z0-9_]+}/reports/{method}_roc_pr_curve.png"
     params:
         method="{method}",
         scale=5
@@ -285,7 +293,7 @@ rule performance_comp:
     input:
         "out/{dataset}/results/predictions.csv"
     output:
-        "out/{dataset}/reports/performance_comp.png"
+        "out/{dataset, [A-Za-z0-9_]+}/reports/performance_comp.png"
     params:
         methods=config['methods'],
         scale=4

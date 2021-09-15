@@ -4,6 +4,7 @@ out
 preprocessed
 results
 logs
+.theano*
 
 
 

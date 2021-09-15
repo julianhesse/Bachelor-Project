@@ -6,6 +6,8 @@ input_file = sys.argv[1]
 test_file = sys.argv[2]
 prediction_file = sys.argv[3]
 out_dir = sys.argv[4]
+fold = sys.argv[5]
+
 
 os.chdir('./methods/iDeepS')
 if not os.path.isdir('./EDeN'):
@@ -36,11 +38,18 @@ def clean_up():
 # clean up
 clean_up()
 
+# create theano compile folder and necessary env
+theano_folder = "%s/../../.theano-%s" % (os.getcwd(), fold)
+if not os.path.isdir(theano_folder):
+    subprocess.Popen(['mkdir', theano_folder])
+my_env = os.environ.copy()
+my_env['THEANO_FLAGS'] = "base_compiledir=%s" % theano_folder
+
 print '\nStarts training iDeepS...'
 # python ideeps.py --train=True --data_file=datasets/clip/10_PARCLIP_ELAVL1A_hg19/30000/training_sample_0/sequences.fa.gz --model_dir=models
 process = subprocess.Popen(['python', 'ideeps.py', '--train=True',
     '--data_file=../../%s' % input_file, '--model_dir=../../%s' % out_dir], stdout=subprocess.PIPE,
-    universal_newlines=True)
+    universal_newlines=True, env=my_env)
 
 while True:
     output = process.stdout.readline()
@@ -65,7 +74,7 @@ print '\nStarts predicting with iDeepS...'
 process = subprocess.Popen(['python', 'ideeps.py', '--predict=True',
     '--data_file=../../%s' % test_file, '--model_dir=../../%s' % out_dir,
     '--out_file=../../%s' % prediction_file], stdout=subprocess.PIPE,
-    universal_newlines=True)
+    universal_newlines=True, env=my_env)
 
 while True:
     output = process.stdout.readline()
