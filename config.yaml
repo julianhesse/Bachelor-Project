@@ -6,7 +6,16 @@ drop_duplicates: true
 folds: 5
 
 # config for the methods
-methods: [deepbind, ideeps, graphprot, graphprot2]
+methods:
+  - deepbind
+  - ideeps
+  - graphprot
+  - graphprot2
+
+# every method needs a prediction_range
+# so the results can be normalized for all methods
+# normalized range is: [0,1]
+# open means: sigmoid function over predictions
 prediction_range:
     {
         deepbind: [0,1],
@@ -14,22 +23,23 @@ prediction_range:
         graphprot: 'open',
         graphprot2: [-1,1],
     }
+
+datasets:
+  - PUM2_K562_iDeepS
+  - PUM2_K562_Pysster
+  - QKI_HepG2_iDeepS
+  - QKI_HepG2_Pysster
+  - RBFOX2_HepG2_iDeepS
+  - RBFOX2_HepG2_Pysster
+  - RBFOX2_HepG2_iDeepS_2
+  - U2AF2_HepG2_iDeepS
+  - U2AF2_HepG2_Pysster
+  - U2AF2_K562_iDeepS
+  - U2AF2_K562_Pysster
+
+## charlie cloud setup ##
+# currently not needed
 #tarball_dir: "/home/icb/julian.hesse/"
 #image_dir: "/localscratch/julian.hesse/"
 tarball_dir: "/var/tmp/"
 image_dir: "/var/tmp/"
-
-datasets:
-  [
-    PUM2_K562_iDeepS,
-    PUM2_K562_Pysster,
-    QKI_HepG2_iDeepS,
-    QKI_HepG2_Pysster,
-    RBFOX2_HepG2_iDeepS,
-    RBFOX2_HepG2_Pysster,
-    RBFOX2_HepG2_iDeepS_2,
-    U2AF2_HepG2_iDeepS,
-    U2AF2_HepG2_Pysster,
-    U2AF2_K562_iDeepS,
-    U2AF2_K562_Pysster,
-]
