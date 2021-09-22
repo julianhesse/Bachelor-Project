@@ -5,6 +5,7 @@ preprocessed
 results
 logs
 .theano*
+datasets
 
 
 

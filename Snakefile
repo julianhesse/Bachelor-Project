@@ -123,7 +123,7 @@ rule run_deepbind:
     benchmark:
         "out/{dataset}/fold-{fold}/deepbind/benchmark.txt"
     threads: 3
-    resources: gpu=1, mem_mb=4500, time_min=40, partition="gpu_p", qos="gpu"
+    resources: gpu=1, mem_mb=4500, time_min=45, partition="gpu_p", qos="gpu"
     conda:
         "envs/deepbind.yaml"
     log:
@@ -143,13 +143,13 @@ rule run_ideeps:
     benchmark:
         "out/{dataset}/fold-{fold}/ideeps/benchmark.txt"
     threads: 2
-    resources: cpus=2, mem_mb=5000, time_min=120, ideeps=0, gpu=1, partition="gpu_p", qos="gpu"
+    resources: cpus=2, mem_mb=5000, time_min=120, gpu=0, partition="gpu_p", qos="gpu"
     conda:
         "envs/ideeps.yaml"
     log:
         "logs/out/ideeps/{dataset}_fold-{fold}_iDeepS_run.log"
     shell:
-        "python scripts/run_ideeps.py {input.train} {input.test} {output.prediction} {params[0]} {wildcards.fold}"
+        "python scripts/run_ideeps.py {input.train} {input.test} {output.prediction} {params[0]} {wildcards.fold} &> {log}"
 
 rule run_graphprot2:
     input:
@@ -173,11 +173,11 @@ rule run_graphprot2:
         "logs/out/graphprot2/{dataset}_fold-{fold}_graphprot2_run.log"
     shell:
         """
-        graphprot2 gt --in {input.positive} --neg-in {input.negative} --out {params.out}/train_data
-        graphprot2 train --in {params.out}/train_data --out {params.out}/trained_model
+        graphprot2 gt --in {input.positive} --neg-in {input.negative} --out {params.out}/train_data &> {log}
+        graphprot2 train --in {params.out}/train_data --out {params.out}/trained_model &>> {log}
 
-        graphprot2 gp --in {input.test} --train-in {params.out}/trained_model --out {params.out}/prediction_data
-        graphprot2 predict --in {params.out}/prediction_data --train-in {params.out}/trained_model --out {params.out}/prediction --mode 1
+        graphprot2 gp --in {input.test} --train-in {params.out}/trained_model --out {params.out}/prediction_data &>> {log}
+        graphprot2 predict --in {params.out}/prediction_data --train-in {params.out}/trained_model --out {params.out}/prediction --mode 1 &>> {log}
         """
 
 rule run_graphprot:
@@ -191,18 +191,18 @@ rule run_graphprot:
     benchmark:
         "out/{dataset}/fold-{fold}/graphprot/benchmark.txt"
     threads: 3
-    resources: cpus=2, mem_mb=9000, time_min=240, partition="interactive_gpu_p", qos="interactive_gpu"
+    resources: mem_mb=3000, time_min=60, partition="interactive_gpu_p", qos="interactive_gpu"
     conda:
         "envs/graphprot.yaml"
     log:
         "logs/out/graphprot/{dataset}_fold-{fold}_graphprot_run.log"
     shell:
         """
-        cd out/{wildcards.dataset}/fold-{wildcards.fold}/graphprot
+        cd out/{wildcards.dataset}/fold-{wildcards.fold}/graphprot &> {log}
         GraphProt.pl --action train -fasta ../../../../{input.positive} \
-            -negfasta ../../../../{input.negative}
-        GraphProt.pl --action predict -model GraphProt.model -fasta ../../../../{input.test}
-        mv GraphProt.predictions prediction.out
+            -negfasta ../../../../{input.negative} &> ../../../../{log}
+        GraphProt.pl --action predict -model GraphProt.model -fasta ../../../../{input.test} &> ../../../../{log}
+        mv GraphProt.predictions prediction.out &> ../../../../{log}
         """
 
 rule output_graphtprot2:

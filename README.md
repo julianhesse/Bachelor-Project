@@ -18,3 +18,4 @@ Also you need to configure the keras backend file `~/.keras/keras.json`:
 
 * I changed DeepBind so it takes variables from snakemake for running
 * I changed iDeepS to save the file `structure.gz` in model_dir instead of `./` (by default `methods/iDeepS`). This makes parallel execution more easy!
+* Also I change the environment (`THEANO_FLAGS`) so that every job running iDeepS has a different `base_compiledir` to avoid locking the theanos compile directory
