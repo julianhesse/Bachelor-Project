@@ -74,9 +74,5 @@ elif snakemake.params['method'] == 'graphprot':
     # write test file
     data = df[df['fold'] == int(snakemake.wildcards['fold'])]
     write_graphprot(data, snakemake.output['test'])
-    with open(snakemake.output['test'], 'w', newline='') as f:
-        for descriptor, seq in zip(data.index, data['seq']):
-            f.write('>' + str(descriptor) + '\n')
-            f.write(seq + '\n')
 
     logging.info('Test file written!')
