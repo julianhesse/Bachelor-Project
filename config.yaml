@@ -10,7 +10,7 @@ methods:
   - deepbind
   - ideeps
   - graphprot
-  - graphprot2
+#  - graphprot2
 
 # every method needs a prediction_range
 # so the results can be normalized for all methods
@@ -25,17 +25,242 @@ prediction_range:
     }
 
 datasets:
-  - PUM2_K562_iDeepS
-  - PUM2_K562_Pysster
-  - QKI_HepG2_iDeepS
-  - QKI_HepG2_Pysster
-  - RBFOX2_HepG2_iDeepS
-  - RBFOX2_HepG2_Pysster
-  - RBFOX2_HepG2_iDeepS_2
+  #- PUM2_K562_iDeepS
+  #- PUM2_K562_Pysster
+  #- QKI_HepG2_iDeepS
+  #- QKI_HepG2_Pysster
+  #- RBFOX2_HepG2_iDeepS
+  #- RBFOX2_HepG2_Pysster
+  #- RBFOX2_HepG2_iDeepS_2
+  #- U2AF2_HepG2_iDeepS
+  #- U2AF2_HepG2_Pysster
+  #- U2AF2_K562_iDeepS
+  #- U2AF2_K562_Pysster
+
+  - AGGF1_HepG2_iDeepS
+  - CDC40_HepG2_iDeepS
+  - DDX59_HepG2_iDeepS
+  - EFTUD2_HepG2_iDeepS
+  - FKBP4_HepG2_iDeepS
+  - GRSF1_HepG2_iDeepS
+
+  - HNRNPK_HepG2_iDeepS
+  - IGF2BP3_HepG2_iDeepS
+  - LSM11_HepG2_iDeepS
+  - NOLC1_HepG2_iDeepS
+  - PRPF4_HepG2_iDeepS
+  - RBM22_HepG2_iDeepS
+  - SF3B4_HepG2_iDeepS
+
+  - SRSF7_HepG2_iDeepS
+  - SUPV3L1_HepG2_iDeepS
+  - TROVE2_HepG2_iDeepS
+  - AKAP1_HepG2_iDeepS
+  - CSTF2_HepG2_iDeepS
+  - DDX6_HepG2_iDeepS
+  - EIF3D_HepG2_iDeepS
+  - FTO_HepG2_iDeepS
+  - GRWD1_HepG2_iDeepS
+
+  - HNRNPL_HepG2_iDeepS
+  - ILF3_HepG2_iDeepS
+  - MATR3_HepG2_iDeepS
+  - PABPN1_HepG2_iDeepS
+  - PRPF8_HepG2_iDeepS
+  - RBM5_HepG2_iDeepS
+  - SFPQ_HepG2_iDeepS
+  - SRSF9_HepG2_iDeepS
+  
+  - TAF15_HepG2_iDeepS
+  - U2AF1_HepG2_iDeepS
+  - AQR_HepG2_iDeepS
+  - CSTF2T_HepG2_iDeepS
+  - DGCR8_HepG2_iDeepS
+  - EIF3H_HepG2_iDeepS
+  - FUBP3_HepG2_iDeepS
+  - GTF2F1_HepG2_iDeepS
+  - HNRNPM_HepG2_iDeepS
+  - KHSRP_HepG2_iDeepS
+  - NCBP2_HepG2_iDeepS
+  - PCBP1_HepG2_iDeepS
+  - PTBP1_HepG2_iDeepS
+  - RPS3_HepG2_iDeepS
+  - SLTM_HepG2_iDeepS
+  - SSB_HepG2_iDeepS
+  - TBRG4_HepG2_iDeepS
   - U2AF2_HepG2_iDeepS
-  - U2AF2_HepG2_Pysster
-  - U2AF2_K562_iDeepS
-  - U2AF2_K562_Pysster
+  - BCCIP_HepG2_iDeepS
+  - DDX3X_HepG2_iDeepS
+  - DHX30_HepG2_iDeepS
+  - EXOSC5_HepG2_iDeepS
+  - FUS_HepG2_iDeepS
+  - HLTF_HepG2_iDeepS
+  - HNRNPU_HepG2_iDeepS
+  - LARP4_HepG2_iDeepS
+  - NIP7_HepG2_iDeepS
+  - PCBP2_HepG2_iDeepS
+  - QKI_HepG2_iDeepS
+  - SAFB_HepG2_iDeepS
+  - SMNDC1_HepG2_iDeepS
+  - STAU2_HepG2_iDeepS
+  - TIA1_HepG2_iDeepS
+  - BCLAF1_HepG2_iDeepS
+  - DDX52_HepG2_iDeepS
+  - DKC1_HepG2_iDeepS
+  - FAM120A_HepG2_iDeepS
+  - FXR2_HepG2_iDeepS
+  - HNRNPA1_HepG2_iDeepS
+  - HNRNPUL1_HepG2_iDeepS
+  - LARP7_HepG2_iDeepS
+  - NKRF_HepG2_iDeepS
+  - POLR2G_HepG2_iDeepS
+  - RBFOX2_HepG2_iDeepS
+  - SDAD1_HepG2_iDeepS
+  - SND1_HepG2_iDeepS
+  - SUB1_HepG2_iDeepS
+  - TIAL1_HepG2_iDeepS
+  - BUD13_HepG2_iDeepS
+  - DDX55_HepG2_iDeepS
+  - DROSHA_HepG2_iDeepS
+
+  - FASTKD2_HepG2_iDeepS
+  - G3BP1_HepG2_iDeepS
+  - HNRNPC_HepG2_iDeepS
+  - IGF2BP1_HepG2_iDeepS
+  - LIN28B_HepG2_iDeepS
+  - NOL12_HepG2_iDeepS
+  - PPIG_HepG2_iDeepS
+  - RBM15_HepG2_iDeepS
+  - SF3A3_HepG2_iDeepS
+  - SRSF1_HepG2_iDeepS
+  - SUGP2_HepG2_iDeepS
+  - TRA2A_HepG2_iDeepS
+
+  - AARS_K562_iDeepS
+  - AATF_K562_iDeepS
+  - ABCF1_K562_iDeepS
+  - AGGF1_K562_iDeepS
+  - AKAP1_K562_iDeepS
+  - AKAP8L_K562_iDeepS
+  - APOBEC3C_K562_iDeepS
+  - AQR_K562_iDeepS
+  - BUD13_K562_iDeepS
+  - CPEB4_K562_iDeepS
+  - CPSF6_K562_iDeepS
+  - CSTF2T_K562_iDeepS
+  - DDX21_K562_iDeepS
+  - DDX24_K562_iDeepS
+  - DDX3X_K562_iDeepS
+  - DDX42_K562_iDeepS
+  - DDX51_K562_iDeepS
+  - DDX52_K562_iDeepS
+  - DDX55_K562_iDeepS
+  - DDX6_K562_iDeepS
+
+  - DGCR8_K562_iDeepS
+  - DHX30_K562_iDeepS
+  - DROSHA_K562_iDeepS
+  - EFTUD2_K562_iDeepS
+  - EIF3G_K562_iDeepS
+  - EIF4G2_K562_iDeepS
+  - EWSR1_K562_iDeepS
+  - EXOSC5_K562_iDeepS
+  - FAM120A_K562_iDeepS
+  - FASTKD2_K562_iDeepS
+  - FMR1_K562_iDeepS
+  - FTO_K562_iDeepS
+  - FUS_K562_iDeepS
+  - FXR1_K562_iDeepS
+  - FXR2_K562_iDeepS
+  - GEMIN5_K562_iDeepS
+  - GNL3_K562_iDeepS
+  - GPKOW_K562_iDeepS
+  - GRWD1_K562_iDeepS
+  - GTF2F1_K562_iDeepS
+
+  - HLTF_K562_iDeepS
+  - HNRNPA1_K562_iDeepS
+  - HNRNPC_K562_iDeepS
+  - HNRNPK_K562_iDeepS
+  - HNRNPL_K562_iDeepS
+  - HNRNPM_K562_iDeepS
+  - HNRNPU_K562_iDeepS
+  - HNRNPUL1_K562_iDeepS
+  - IGF2BP1_K562_iDeepS
+  - IGF2BP2_K562_iDeepS
+  - ILF3_K562_iDeepS
+  - KHDRBS1_K562_iDeepS
+  - KHSRP_K562_iDeepS
+  - LARP4_K562_iDeepS
+  - LARP7_K562_iDeepS
+  - LIN28B_K562_iDeepS
+  - LSM11_K562_iDeepS
+  - MATR3_K562_iDeepS
+  - METAP2_K562_iDeepS
+  - MTPAP_K562_iDeepS
+
+  #- NCBP2_K562_iDeepS
+  #- NIPBL_K562_iDeepS
+  #- NOLC1_K562_iDeepS
+  #- NONO_K562_iDeepS
+  #- NPM1_K562_iDeepS
+  #- NSUN2_K562_iDeepS
+  #- PABPC4_K562_iDeepS
+  #- PCBP1_K562_iDeepS
+  #- PHF6_K562_iDeepS
+  #- PPIL4_K562_iDeepS
+  #- PRPF8_K562_iDeepS
+  #- PTBP1_K562_iDeepS
+  #- PUM1_K562_iDeepS
+  #- PUM2_K562_iDeepS
+  #- PUS1_K562_iDeepS
+  #- QKI_K562_iDeepS
+  #- RBFOX2_K562_iDeepS
+  #- RBM15_K562_iDeepS
+  #- RBM22_K562_iDeepS
+  #- RPS11_K562_iDeepS
+
+  #- RPS3_K562_iDeepS
+  #- SAFB2_K562_iDeepS
+  #- SAFB_K562_iDeepS
+  #- SBDS_K562_iDeepS
+  #- SDAD1_K562_iDeepS
+  #- SERBP1_K562_iDeepS
+  #- SF3B1_K562_iDeepS
+  #- SF3B4_K562_iDeepS
+  #- SLBP_K562_iDeepS
+  #- SLTM_K562_iDeepS
+  #- SMNDC1_K562_iDeepS
+  #- SND1_K562_iDeepS
+  #- SRSF1_K562_iDeepS
+  #- SRSF7_K562_iDeepS
+  #- SSB_K562_iDeepS
+  #- SUPV3L1_K562_iDeepS
+  #- TAF15_K562_iDeepS
+  #- TARDBP_K562_iDeepS
+  #- TBRG4_K562_iDeepS
+  #- TIA1_K562_iDeepS
+
+  #- TRA2A_K562_iDeepS
+  #- TROVE2_K562_iDeepS
+  #- U2AF1_K562_iDeepS
+  #- U2AF2_K562_iDeepS
+  #- UCHL5_K562_iDeepS
+  #- UPF1_K562_iDeepS
+  #- UTP18_K562_iDeepS
+  #- UTP3_K562_iDeepS
+  #- WDR3_K562_iDeepS
+  #- WDR43_K562_iDeepS
+  #- WRN_K562_iDeepS
+  #- XRCC6_K562_iDeepS
+  #- XRN2_K562_iDeepS
+  #- YBX3_K562_iDeepS
+  #- YWHAG_K562_iDeepS
+  #- ZC3H11A_K562_iDeepS
+  #- ZC3H8_K562_iDeepS
+  #- ZNF622_K562_iDeepS
+  #- ZNF800_K562_iDeepS
+  #- ZRANB2_K562_iDeepS
 
 ## charlie cloud setup ##
 # currently not needed
