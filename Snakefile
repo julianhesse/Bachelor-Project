@@ -17,6 +17,8 @@ configfile: "config.yaml"
 DATA_FILE="out/{dataset, [A-Za-z0-9_]+}/db.csv" # Database for data about the samples
 DATA_FILE_="out/{dataset}/db.csv" # Database for data about the samples
 DATASETS=os.listdir('datasets')
+OUT_FOLDER=glob_wildcards('out/{dataset, [A-Za-z0-9_]+}').dataset
+OUT_FOLDER_=glob_wildcards('out/{dataset}').dataset
 
 
 #### preprocessing #####
@@ -30,6 +32,7 @@ rule preprocess_all:
         expand("out/{dataset}/data/{fold}_train_graphprot_positive.fasta", dataset=["RBFOX2_HepG2_iDeepS"], fold=[i for i in range(5)]),
         expand("out/{dataset}/data/{fold}_train_graphprot_negative.fasta", dataset=["RBFOX2_HepG2_iDeepS"], fold=[i for i in range(5)]),
         expand("out/{dataset}/data/{fold}_test_graphprot.fasta", dataset=["RBFOX2_HepG2_iDeepS"], fold=[i for i in range(5)])
+
 
 rule preprocess_dataset_folds:
     input:
@@ -322,6 +325,24 @@ rule report_all_test:
                 method=config['methods']),
         expand("out/Test/reports/performance_comp.png",
                 method=config['methods'])
+
+rule compress:
+    input:
+        "out/{dataset}/reports/performance_comp.png"
+    output:
+        "out/{dataset, [A-Za-z0-9_]+}.tar.gz"
+    shell:
+        """
+        cd out
+        tar -zcf {wildcards.dataset}.tar.gz {wildcards.dataset}
+        """
+
+rule compress_all:
+    input:
+        #expand("out/{dataset}.tar.gz", dataset=glob_wildcards(DATA_FILE).dataset)
+        expand("out/{dataset}.tar.gz", dataset=config['datasets'])
+        
+        
 
 def my_func(wildcards):
     print('Wildcards:')
