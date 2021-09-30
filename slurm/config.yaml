@@ -7,7 +7,7 @@ cluster: "sbatch --time={resources.time_min} --mem={resources.mem_mb}
             --nice=10000"
 jobs: 15
 default-resources: [cpus=1, mem_mb=1000, time_min=5, gpu=0, partition=cpu_p, qos=icb]
-resources: [cpus=100, mem_mb=80000, gpu=15]
+resources: [cpus=100, mem_mb=100000, gpu=15]
 restart-times: 3
 scheduler: greedy
 printshellcmds: True
