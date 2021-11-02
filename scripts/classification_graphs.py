@@ -61,7 +61,7 @@ for i in range(folds):
 
     # plot ROC curve
     axs[0,0].plot(fpr, tpr, #color='darkorange',
-             lw=lw, label='Fold %d' % i)
+             lw=lw, label='Fold %d (%.2f)' % (i, roc_auc))
     axs[i+1,0].plot(fpr, tpr, color='darkorange',
              lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
     axs[i+1,0].plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
@@ -72,7 +72,7 @@ for i in range(folds):
 
     # plot PR curve
     axs[0,1].plot(recall, prec,
-             lw=lw, label='Fold %d' % i)
+                  lw=lw, label='Fold %d (%.2f)' % (i, average_precision))
     axs[i+1,1].plot(recall, prec,
              lw=lw, label='PR curve (AP = %0.2f)' % average_precision)
     axs[i+1,1].set_xlabel('Recall')
