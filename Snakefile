@@ -270,6 +270,28 @@ rule aggregate_dataset_predictions:
 
 #### evaluate predictions ####
 
+def all_cell_line_results(wildcards):
+    """
+    Collect all the `predictions.csv` files for one cell line.
+    """
+    files = {}
+    rbps = glob_wildcards("out/{{rbp}}_{cell_line}_iDeepS/results/predictions.csv".format(
+           cell_line=wildcards.cell_line
+         )).rbp
+    for rbp in rbps:
+        prediction_csv = f"out/{rbp}_{wildcards.cell_line}_iDeepS/results/predictions.csv"
+        files[rbp] = prediction_csv
+    return files
+
+rule postprocessing_roc_auc:
+     input:
+        # files=expand("out/{rbp}_{cell_line}_iDeepS/results/predictions.csv", rpb=RBPs, cell_line=wildcards.cell_line)
+        unpack(all_cell_line_results)
+     output:
+        "out/results/{cell_line, [A-Za-z0-9]+}_{mode}.csv"
+     script:
+        "scripts/metric_dataframe.py"
+
 
 rule classification_report:
     input:
@@ -341,8 +363,51 @@ rule compress_all:
     input:
         #expand("out/{dataset}.tar.gz", dataset=glob_wildcards(DATA_FILE).dataset)
         expand("out/{dataset}.tar.gz", dataset=config['datasets'])
-        
-        
+
+
+#### Fancy graphs ####
+
+rule scatter_plot:
+    input:
+        "out/results/{cell_line}_{mode}.csv"
+    output:
+        "out/plots/{cell_line, [A-Za-z]+[0-9]+}_{method_0}_{method_1}_scatterplot_{mode}.png"
+    script:
+        "scripts/scatter_plot.py"
+
+rule box_plot:
+     input:
+        "out/results/{cell_line}_{mode}.csv"
+     output:
+        "out/plots/{cell_line}_boxplot_{mode}.png"
+     script:
+        "scripts/box_plot.py"
+
+rule bar_plot:
+     input:
+        "out/results/{cell_line}_{mode}.csv"
+     output:
+        "out/plots/{cell_line}_barplot_{mode}.png"
+     script:
+        "scripts/bar_plot.py"
+
+rule plots_roc_auc:
+     input:
+        expand("out/plots/{cell_line}_{method_0}_{method_1}_scatterplot_roc_auc.png",
+            cell_line=config['cell_lines'],
+            method_0=config['methods'],
+            method_1=config['methods']
+        ),
+        expand("out/plots/{cell_line}_boxplot_roc_auc.png", cell_line=config['cell_lines'])
+
+rule plots_ap:
+     input:
+        expand("out/plots/{cell_line}_{method_0}_{method_1}_scatterplot_ap.png",
+            cell_line=config['cell_lines'],
+            method_0=config['methods'],
+            method_1=config['methods']
+        ),
+        expand("out/plots/{cell_line}_boxplot_ap.png", cell_line=config['cell_lines'])
 
 def my_func(wildcards):
     print('Wildcards:')

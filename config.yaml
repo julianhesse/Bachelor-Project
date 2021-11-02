@@ -7,9 +7,9 @@ folds: 5
 
 # config for the methods
 methods:
-  - deepbind
   - ideeps
   - graphprot
+  - deepbind
 #  - graphprot2
 
 # every method needs a prediction_range
@@ -23,6 +23,10 @@ prediction_range:
         graphprot: 'open',
         graphprot2: [-1,1],
     }
+
+cell_lines:
+  - HepG2
+  - K562
 
 datasets:
   #- PUM2_K562_iDeepS

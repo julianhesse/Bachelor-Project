@@ -55,21 +55,22 @@ ax1.boxplot(auROCs.values(),
             vert=True,
             patch_artist=True,
             labels=auROCs.keys())
-ax1.set_title(f'auROC values over {folds} folds on {snakemake.wildcards.dataset}')
+ax1.set_title(f'auROC')
 
 # Boxplot for accuracy values over folds
 ax2.boxplot(accs.values(),
             vert=True,
             patch_artist=True,
             labels=accs.keys())
-ax2.set_title(f'Accuracy values over {folds} folds on {snakemake.wildcards.dataset}')
+ax2.set_title(f'Accuracy')
 
 # Boxplot for AP values over folds
 ax3.boxplot(aps.values(),
             vert=True,
             patch_artist=True,
             labels=aps.keys())
-ax3.set_title(f'AP values over {folds} folds on {snakemake.wildcards.dataset}')
+ax3.set_title(f'Average Precision')
 
+fig.suptitle(f'{snakemake.wildcards.dataset} with {folds}-fold cross-validation')
 fig.tight_layout()
 fig.savefig(snakemake.output[0], dpi=300)
