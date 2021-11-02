@@ -134,6 +134,25 @@ rule run_deepbind:
     script:
         "methods/DeepBind_with_Tensorflow/deepbind.py"
 
+rule run_deepbind_pytorch:
+    input:
+        train="out/{dataset}/data/{fold}_train_deepbind.seq.gz",
+        test="out/{dataset}/data/{fold}_test_deepbind.seq.gz"
+    params:
+        out="out/{dataset}/fold-{fold}/deepbind_pytorch/"
+    output:
+        prediction="out/{dataset}/fold-{fold, [0-9]+}/deepbind_pytorch/prediction.out"
+    benchmark:
+        "out/{dataset}/fold-{fold}/deepbind_pytorch/benchmark.txt"
+    threads: 3
+    resources: gpu=1, mem_mb=4500, time_min=45, partition="gpu_p", qos="gpu"
+    conda:
+        "envs/deepbind_pytorch.yaml"
+    log:
+        "logs/out/deepbind/{dataset}_fold-{fold, [0-9]+}_deepbind_run.log"
+    shell:
+        "python methods/deepbind_pytorch/deepbind.py {input.train} {input.test} {params.out} &> {log}"
+
 rule run_ideeps:
     input:
         train="out/{dataset}/data/{fold}_train_ideeps.fa.gz",

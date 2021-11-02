@@ -7,3 +7,6 @@
 [submodule "methods/DeepBind_with_Tensorflow"]
 	path = methods/DeepBind_with_Tensorflow
 	url = https://github.com/julianhesse/DeepBind_with_Tensorflow.git
+[submodule "methods/deepbind_pytorch"]
+	path = methods/deepbind_pytorch
+	url = https://github.com/julianhesse/DeepBind-with-PyTorch.git

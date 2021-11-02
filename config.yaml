@@ -10,6 +10,7 @@ methods:
   - ideeps
   - graphprot
   - deepbind
+  # - deepbind_pytorch
 #  - graphprot2
 
 # every method needs a prediction_range
@@ -19,6 +20,7 @@ methods:
 prediction_range:
     {
         deepbind: [0,1],
+        deepbind_pytorch: [0,1],
         ideeps: [0,1],
         graphprot: 'open',
         graphprot2: [-1,1],
@@ -29,6 +31,7 @@ cell_lines:
   - K562
 
 datasets:
+  # - QKI2_HepG2_iDeepS
   #- PUM2_K562_iDeepS
   #- PUM2_K562_Pysster
   #- QKI_HepG2_iDeepS
@@ -74,7 +77,7 @@ datasets:
   - RBM5_HepG2_iDeepS
   - SFPQ_HepG2_iDeepS
   - SRSF9_HepG2_iDeepS
-  
+
   - TAF15_HepG2_iDeepS
   - U2AF1_HepG2_iDeepS
   - AQR_HepG2_iDeepS
@@ -203,68 +206,68 @@ datasets:
   - METAP2_K562_iDeepS
   - MTPAP_K562_iDeepS
 
-  #- NCBP2_K562_iDeepS
-  #- NIPBL_K562_iDeepS
-  #- NOLC1_K562_iDeepS
-  #- NONO_K562_iDeepS
-  #- NPM1_K562_iDeepS
-  #- NSUN2_K562_iDeepS
-  #- PABPC4_K562_iDeepS
-  #- PCBP1_K562_iDeepS
-  #- PHF6_K562_iDeepS
-  #- PPIL4_K562_iDeepS
-  #- PRPF8_K562_iDeepS
-  #- PTBP1_K562_iDeepS
-  #- PUM1_K562_iDeepS
-  #- PUM2_K562_iDeepS
-  #- PUS1_K562_iDeepS
-  #- QKI_K562_iDeepS
-  #- RBFOX2_K562_iDeepS
-  #- RBM15_K562_iDeepS
-  #- RBM22_K562_iDeepS
-  #- RPS11_K562_iDeepS
+  - NCBP2_K562_iDeepS
+  - NIPBL_K562_iDeepS
+  - NOLC1_K562_iDeepS
+  - NONO_K562_iDeepS
+  - NPM1_K562_iDeepS
+  - NSUN2_K562_iDeepS
+  - PABPC4_K562_iDeepS
+  - PCBP1_K562_iDeepS
+  - PHF6_K562_iDeepS
+  - PPIL4_K562_iDeepS
+  - PRPF8_K562_iDeepS
+  - PTBP1_K562_iDeepS
+  - PUM1_K562_iDeepS
+  - PUM2_K562_iDeepS
+  - PUS1_K562_iDeepS
+  - QKI_K562_iDeepS
+  - RBFOX2_K562_iDeepS
+  - RBM15_K562_iDeepS
+  - RBM22_K562_iDeepS
+  - RPS11_K562_iDeepS
 
-  #- RPS3_K562_iDeepS
-  #- SAFB2_K562_iDeepS
-  #- SAFB_K562_iDeepS
-  #- SBDS_K562_iDeepS
-  #- SDAD1_K562_iDeepS
-  #- SERBP1_K562_iDeepS
-  #- SF3B1_K562_iDeepS
-  #- SF3B4_K562_iDeepS
-  #- SLBP_K562_iDeepS
-  #- SLTM_K562_iDeepS
-  #- SMNDC1_K562_iDeepS
-  #- SND1_K562_iDeepS
-  #- SRSF1_K562_iDeepS
-  #- SRSF7_K562_iDeepS
-  #- SSB_K562_iDeepS
-  #- SUPV3L1_K562_iDeepS
-  #- TAF15_K562_iDeepS
-  #- TARDBP_K562_iDeepS
-  #- TBRG4_K562_iDeepS
-  #- TIA1_K562_iDeepS
+  - RPS3_K562_iDeepS
+  - SAFB2_K562_iDeepS
+  - SAFB_K562_iDeepS
+  - SBDS_K562_iDeepS
+  - SDAD1_K562_iDeepS
+  - SERBP1_K562_iDeepS
+  - SF3B1_K562_iDeepS
+  - SF3B4_K562_iDeepS
+  - SLBP_K562_iDeepS
+  - SLTM_K562_iDeepS
+  - SMNDC1_K562_iDeepS
+  - SND1_K562_iDeepS
+  - SRSF1_K562_iDeepS
+  - SRSF7_K562_iDeepS
+  - SSB_K562_iDeepS
+  - SUPV3L1_K562_iDeepS
+  - TAF15_K562_iDeepS
+  - TARDBP_K562_iDeepS
+  - TBRG4_K562_iDeepS
+  - TIA1_K562_iDeepS
 
-  #- TRA2A_K562_iDeepS
-  #- TROVE2_K562_iDeepS
-  #- U2AF1_K562_iDeepS
-  #- U2AF2_K562_iDeepS
-  #- UCHL5_K562_iDeepS
-  #- UPF1_K562_iDeepS
-  #- UTP18_K562_iDeepS
-  #- UTP3_K562_iDeepS
-  #- WDR3_K562_iDeepS
-  #- WDR43_K562_iDeepS
-  #- WRN_K562_iDeepS
-  #- XRCC6_K562_iDeepS
-  #- XRN2_K562_iDeepS
-  #- YBX3_K562_iDeepS
-  #- YWHAG_K562_iDeepS
-  #- ZC3H11A_K562_iDeepS
-  #- ZC3H8_K562_iDeepS
-  #- ZNF622_K562_iDeepS
-  #- ZNF800_K562_iDeepS
-  #- ZRANB2_K562_iDeepS
+  - TRA2A_K562_iDeepS
+  - TROVE2_K562_iDeepS
+  - U2AF1_K562_iDeepS
+  - U2AF2_K562_iDeepS
+  - UCHL5_K562_iDeepS
+  - UPF1_K562_iDeepS
+  - UTP18_K562_iDeepS
+  - UTP3_K562_iDeepS
+  - WDR3_K562_iDeepS
+  - WDR43_K562_iDeepS
+  - WRN_K562_iDeepS
+  - XRCC6_K562_iDeepS
+  - XRN2_K562_iDeepS
+  - YBX3_K562_iDeepS
+  - YWHAG_K562_iDeepS
+  - ZC3H11A_K562_iDeepS
+  - ZC3H8_K562_iDeepS
+  - ZNF622_K562_iDeepS
+  - ZNF800_K562_iDeepS
+  - ZRANB2_K562_iDeepS
 
 ## charlie cloud setup ##
 # currently not needed
