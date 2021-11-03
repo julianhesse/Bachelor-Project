@@ -395,38 +395,52 @@ rule scatter_plot:
         "scripts/scatter_plot.py"
 
 rule box_plot:
-     input:
-        "out/results/{cell_line}_{mode}.csv"
-     output:
-        "out/plots/{cell_line}_boxplot_{mode}.png"
-     script:
-        "scripts/box_plot.py"
+    input:
+       "out/results/{cell_line}_{mode}.csv"
+    output:
+       "out/plots/{cell_line}_boxplot_{mode}.png"
+    script:
+       "scripts/box_plot.py"
 
 rule bar_plot:
-     input:
-        "out/results/{cell_line}_{mode}.csv"
-     output:
-        "out/plots/{cell_line}_barplot_{mode}.png"
-     script:
-        "scripts/bar_plot.py"
+    input:
+       "out/results/{cell_line}_{mode}.csv"
+    output:
+       "out/plots/{cell_line}_barplot_{mode}.png"
+    script:
+       "scripts/bar_plot.py"
 
 rule plots_roc_auc:
-     input:
-        expand("out/plots/{cell_line}_{method_0}_{method_1}_scatterplot_roc_auc.png",
-            cell_line=config['cell_lines'],
-            method_0=config['methods'],
-            method_1=config['methods']
-        ),
-        expand("out/plots/{cell_line}_boxplot_roc_auc.png", cell_line=config['cell_lines'])
+    input:
+       expand("out/plots/{cell_line}_{method_0}_{method_1}_scatterplot_roc_auc.png",
+           cell_line=config['cell_lines'],
+           method_0=config['methods'],
+           method_1=config['methods']
+       ),
+       expand("out/plots/{cell_line}_boxplot_roc_auc.png", cell_line=config['cell_lines'])
 
 rule plots_ap:
+    input:
+       expand("out/plots/{cell_line}_{method_0}_{method_1}_scatterplot_ap.png",
+           cell_line=config['cell_lines'],
+           method_0=config['methods'],
+           method_1=config['methods']
+       ),
+       expand("out/plots/{cell_line}_boxplot_ap.png", cell_line=config['cell_lines'])
+
+rule compare_cell_lines:
+    input:
+       cell_line_0="out/results/{cell_line_0}_{mode}.csv",
+       cell_line_1="out/results/{cell_line_1}_{mode}.csv"
+    output:
+       "out/plots/{cell_line_0, [A-Za-z0-9]+}-{cell_line_1, [A-Za-z0-9]+}-{method}-{mode}.png"
+    script:
+       "scripts/cell_line_compare.py"
+
+rule compare_cell_lines_all_methods:
      input:
-        expand("out/plots/{cell_line}_{method_0}_{method_1}_scatterplot_ap.png",
-            cell_line=config['cell_lines'],
-            method_0=config['methods'],
-            method_1=config['methods']
-        ),
-        expand("out/plots/{cell_line}_boxplot_ap.png", cell_line=config['cell_lines'])
+        expand("out/plots/HepG2-K562-{method}-roc_auc.png", method=config['methods']),
+        expand("out/plots/HepG2-K562-{method}-ap.png", method=config['methods'])
 
 def my_func(wildcards):
     print('Wildcards:')
