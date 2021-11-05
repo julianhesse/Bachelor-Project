@@ -303,14 +303,47 @@ def all_cell_line_results(wildcards):
     return files
 
 rule postprocessing_roc_auc:
-     input:
+    input:
         # files=expand("out/{rbp}_{cell_line}_iDeepS/results/predictions.csv", rpb=RBPs, cell_line=wildcards.cell_line)
         unpack(all_cell_line_results)
-     output:
-        "out/results/{cell_line, [A-Za-z0-9]+}_{mode}.csv"
-     script:
+    output:
+        "out/results/{cell_line, [A-Za-z0-9]+}_{mode, [a-z_]+}.csv"
+    script:
         "scripts/metric_dataframe.py"
 
+def all_cell_line_data(wildcards):
+    """
+    Collect all the `db.csv` files for one cell line.
+    """
+    files = {}
+    rbps = glob_wildcards("out/{{rbp}}_{cell_line}_iDeepS/db.csv".format(
+           cell_line=wildcards.cell_line
+         )).rbp
+    for rbp in rbps:
+        prediction_csv = f"out/{rbp}_{wildcards.cell_line}_iDeepS/db.csv"
+        files[rbp] = prediction_csv
+    return files
+
+rule dataset_insight_graph:
+    input:
+        unpack(all_cell_line_data)
+    output:
+        "out/plots/{cell_line, [A-Za-z0-9]+}_dataset_insight.png"
+    script:
+        "scripts/dataset_analyze.py"
+
+rule dataset_insight_metadata:
+    input:
+        unpack(all_cell_line_data)
+    output:
+        "out/results/{cell_line, [A-Za-z0-9]+}-dataset_insight.csv"
+    script:
+        "scripts/dataset_metadata.py"
+
+rule dataset_insights:
+     input:
+        expand("out/plots/{cell_line}_dataset_insight.png", cell_line=config['cell_lines']),
+        expand("out/results/{cell_line}-dataset_insight.csv", cell_line=config['cell_lines'])
 
 rule classification_report:
     input:
