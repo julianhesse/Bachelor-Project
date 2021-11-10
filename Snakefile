@@ -386,6 +386,13 @@ rule case_study_venn:
     script:
         "scripts/case_study.py"
 
+rule case_study_matrix:
+    input:
+        "out/{dataset}/results/predictions.csv"
+    output:
+        "out/{dataset, [A-Za-z0-9_]+}/reports/case_study_matrix-{boundary}.png"
+    script:
+        "scripts/case_study_matrix.py"
 
 rule report_all:
     input:
