@@ -377,6 +377,14 @@ rule performance_comp:
     script:
         "scripts/performance_comp.py"
 
+rule case_study_venn:
+    input:
+        "out/{dataset}/results/predictions.csv"
+    output:
+        "out/{dataset, [A-Za-z0-9_]+}/reports/case_study_folds.png",
+        "out/{dataset, [A-Za-z0-9_]+}/reports/case_study_all.png",
+    script:
+        "scripts/case_study.py"
 
 
 rule report_all:

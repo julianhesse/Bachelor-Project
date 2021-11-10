@@ -16,8 +16,8 @@ df = pd.read_csv(file).set_index(['RBP', 'fold'])
 
 df = df.loc[(slice(None), 'mean'), :]
 
-plt.plot([0,1], [0,1], c="orange")
-plt.scatter(df[method_0], df[method_1])
+plt.plot([0,1], [0,1], c="orange", zorder=1)
+plt.scatter(df[method_0], df[method_1], zorder=2)
 plt.xlim(0.5, 1.)
 plt.ylim(0.5, 1.)
 
