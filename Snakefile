@@ -465,7 +465,8 @@ rule plots_roc_auc:
            method_0=config['methods'],
            method_1=config['methods']
        ),
-       expand("out/plots/{cell_line}_boxplot_roc_auc.png", cell_line=config['cell_lines'])
+       expand("out/plots/{cell_line}_boxplot_roc_auc.png", cell_line=config['cell_lines']),
+       expand("out/plots/{cell_line}_barplot_roc_auc.png", cell_line=config['cell_lines'])
 
 rule plots_ap:
     input:
@@ -474,7 +475,32 @@ rule plots_ap:
            method_0=config['methods'],
            method_1=config['methods']
        ),
-       expand("out/plots/{cell_line}_boxplot_ap.png", cell_line=config['cell_lines'])
+       expand("out/plots/{cell_line}_boxplot_ap.png", cell_line=config['cell_lines']),
+       expand("out/plots/{cell_line}_barplot_ap.png", cell_line=config['cell_lines'])
+
+rule plots:
+     input:
+        rules.plots_ap.input,
+        rules.plots_roc_auc.input
+
+rule correlation_dataset_size:
+    input:
+        stats="out/results/{cell_line}-dataset_insight.csv",
+        performance="out/results/{cell_line}_{mode}.csv"
+    output:
+        "out/plots/correlation-{statistic}-{mode}-{cell_line}.png"
+    params:
+        scale=4
+    script:
+        "scripts/correlation_vis.py"
+
+rule correlation_plots:
+     input:
+        expand("out/plots/correlation-{statistic}-{mode}-{cell_line}.png",
+            statistic=['mean', 'std'],
+            mode=['roc_auc', 'ap'],
+            cell_line=config['cell_lines']
+        )
 
 rule compare_cell_lines:
     input:
