@@ -7,6 +7,7 @@ file = snakemake.input[0]
 folds = snakemake.config['folds']
 cell_line = snakemake.wildcards['cell_line']
 methods = snakemake.config['methods']
+mode = snakemake.wildcards['mode']
 
 ## prepare data ##
 
@@ -25,7 +26,12 @@ boxplot = ax.boxplot(df,
 
 ax.set_ylim([0,1.])
 ax.set_yticks(np.arange(0,1.1, step=0.1))
-ax.set_ylabel('mean AUC ROC for each dataset')
+if mode == 'roc_auc':
+    plt.xlabel(f"Mean auROC over 5 folds")
+    plt.ylabel(f"Mean auROC over 5 folds")
+else:
+    plt.xlabel(f"Mean AP over 5 folds")
+    plt.ylabel(f"Mean AP over 5 folds")
 ax.set_xlabel('methods')
 ax.yaxis.grid(True)
 
