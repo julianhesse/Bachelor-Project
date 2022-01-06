@@ -48,7 +48,7 @@ for method in methods:
 
 ### Create graphs ###
 scale=snakemake.params['scale']
-fig, (ax1, ax2, ax3) = plt.subplots(1,3, figsize=(scale*3,scale*1))
+fig, (ax1, ax2, ax3) = plt.subplots(1,3, figsize=(scale*3,scale*1), sharey=True)
 
 # Boxplot for ROC auc values over folds
 ax1.boxplot(auROCs.values(),
@@ -70,6 +70,12 @@ ax3.boxplot(aps.values(),
             patch_artist=True,
             labels=aps.keys())
 ax3.set_title(f'Average Precision')
+
+# define y axis
+start = 0.4
+ax1.set_ylim([start,1.])
+ax1.set_yticks(np.arange(start,1.1, step=0.1))
+
 
 fig.suptitle(f'{snakemake.wildcards.dataset} with {folds}-fold cross-validation')
 fig.tight_layout()
