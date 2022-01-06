@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib_venn import venn3
+from matplotlib_venn import venn3,venn2
 
 methods = snakemake.config['methods']
 
@@ -35,7 +35,10 @@ df_tmp = df[df['class'] == 0]
 
 sets = get_sets(df_tmp)
 
-venn3(sets, methods, ax=axs[0,0])
+if len(methods) == 3:
+    venn3(sets, methods, ax=axs[0,0])
+else:
+    venn2(sets, methods, ax=axs[0,0])
 
 axs[0,0].set_title('negatives')
 
@@ -43,7 +46,10 @@ df_tmp = df[df['class'] == 1]
 
 sets = get_sets(df_tmp)
 
-venn3(sets, methods, ax=axs[0,1])
+if len(methods) == 3:
+    venn3(sets, methods, ax=axs[0,1])
+else:
+    venn2(sets, methods, ax=axs[0,1])
 
 axs[0,1].set_title('positives')
 
@@ -52,19 +58,28 @@ for i in range(folds):
 
     sets = get_sets(df_tmp)
 
-    venn3(sets, methods, ax=axs[i+1,0])
+    if len(methods) == 3:
+        venn3(sets, methods, ax=axs[i+1,0])
+    else:
+        venn2(sets, methods, ax=axs[i+1,0])
 
     df_tmp = df[(df['class'] == 1) & (df['fold'] == i)]
 
     sets = get_sets(df_tmp)
 
-    venn3(sets, methods, ax=axs[i+1,1])
+    if len(methods) == 3:
+        venn3(sets, methods, ax=axs[i+1,1])
+    else:
+        venn2(sets, methods, ax=axs[i+1,1])
 
 fig.suptitle(f'{snakemake.wildcards.dataset} - venn-diagrams for correct predictions')
 fig.savefig(snakemake.output[0], dpi=300)
 plt.show()
 
 
-venn3(get_sets(df), methods)
+if len(methods) == 3:
+    venn3(get_sets(df), methods)
+else:
+    venn2(get_sets(df), methods)
 plt.savefig(snakemake.output[1], dpi=300)
 plt.show()
