@@ -149,7 +149,7 @@ rule run_deepbind_pytorch:
     conda:
         "envs/deepbind_pytorch.yaml"
     log:
-        "logs/out/deepbind/{dataset}_fold-{fold, [0-9]+}_deepbind_run.log"
+        "logs/out/deepbind/{dataset}_fold-{fold, [0-9]+}_deepbind_pytorch_run.log"
     shell:
         "python methods/deepbind_pytorch/deepbind.py {input.train} {input.test} {params.out} &> {log}"
 
@@ -478,10 +478,6 @@ rule plots_ap:
        expand("out/plots/{cell_line}_boxplot_ap.png", cell_line=config['cell_lines']),
        expand("out/plots/{cell_line}_barplot_ap.png", cell_line=config['cell_lines'])
 
-rule plots:
-     input:
-        rules.plots_ap.input,
-        rules.plots_roc_auc.input
 
 rule correlation_dataset_size:
     input:
@@ -515,6 +511,12 @@ rule compare_cell_lines_all_methods:
      input:
         expand("out/plots/HepG2-K562-{method}-roc_auc.png", method=config['methods']),
         expand("out/plots/HepG2-K562-{method}-ap.png", method=config['methods'])
+
+rule plots:
+     input:
+        rules.plots_ap.input,
+        rules.plots_roc_auc.input,
+        rules.compare_cell_lines_all_methods.input
 
 def my_func(wildcards):
     print('Wildcards:')
