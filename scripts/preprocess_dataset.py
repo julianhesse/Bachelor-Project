@@ -21,7 +21,7 @@ if snakemake.params['folds'] == 'manual':
     seqs = [] # stores dna/rna sequences
     descriptors = [] # stores description of sequences
     classes = [] # stores 1 for positive and 0 for negative
-    folds = [] # stores 1 for positive and 0 for negative
+    folds = [] # stores number of fold
 
     for fold, (pos, neg) in enumerate(zip(snakemake.input['positive'], snakemake.input['negative'])):
         m = re.findall(r'(?<=fold-)[0-9]+', pos)
