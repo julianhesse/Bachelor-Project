@@ -39,7 +39,7 @@ for i, method in enumerate(methods):
 
     ax.set_title(f'{method}')
     ax.set_xlabel(f'Size of dataset from {cell_line}')
-    ax.set_ylabel(f'{statistic} {mode} {method}')
+    ax.set_ylabel(f'{statistic} {"AUROC" if mode == "auc_roc" else "AP"} {method}')
     ax.legend()
 
 

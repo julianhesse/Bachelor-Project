@@ -20,8 +20,8 @@ for rbp, f_name in rbp_files.items():
 values = np.array(values)
 plt.plot([0,np.max(values)], [0,np.max(values)], c="orange", zorder=1)
 plt.scatter(values[:, 0], values[:, 1], s=8, alpha=0.5, zorder=2)
-plt.xlabel("Number of positives")
-plt.ylabel("Number of negatives")
+plt.xlabel("number of positives")
+plt.ylabel("number of negatives")
 plt.title(f'{snakemake.wildcards["cell_line"]}')
 
 plt.savefig(snakemake.output[0], dpi=300)

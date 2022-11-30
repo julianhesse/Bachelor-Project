@@ -51,6 +51,20 @@ rule preprocess_dataset_folds:
     script:
         "scripts/preprocess_dataset.py"
 
+rule preprocess_dataset_ideeps:
+    input:
+        train="methods/iDeepS/datasets/clip/{dataset}/30000/training_sample_0/sequences.fa.gz",
+        test="methods/iDeepS/datasets/clip/{dataset}/30000/test_sample_0/sequences.fa.gz"
+    output:
+        "out/{dataset, [A-Za-z0-9_-]+}_iDeepS/db.csv"
+    params:
+        folds=config['folds'],
+        seed=462
+    log:
+        "logs/preprocess/{dataset}_iDeepS_to_csv.log"
+    script:
+        "scripts/preprocess_dataset_ideeps.py"
+
 rule preprocess_dataset:
     input:
         positive="datasets/{dataset}/positive.fasta",
@@ -172,6 +186,27 @@ rule run_ideeps:
         "logs/out/ideeps/{dataset}_fold-{fold}_iDeepS_run.log"
     shell:
         "python scripts/run_ideeps.py {input.train} {input.test} {output.prediction} {params[0]} {wildcards.fold} &> {log}"
+
+rule run_ideeps_os:
+    input:
+        train="out/{dataset}/data/{fold}_train_ideeps.fa.gz",
+        test="out/{dataset}/data/{fold}_test_ideeps.fa.gz",
+    params:
+        "out/{dataset}/fold-{fold}/ideeps_os/"
+    output:
+        model="out/{dataset}/fold-{fold, [0-9]+}/ideeps_os/model.pkl",
+        prediction="out/{dataset}/fold-{fold, [0-9]+}/ideeps_os/prediction.out"
+    benchmark:
+        "out/{dataset}/fold-{fold}/ideeps_os/benchmark.txt"
+    threads: 2
+    resources: cpus=2, mem_mb=5000, time_min=120, gpu=0, partition="gpu_p", qos="gpu"
+    conda:
+        "envs/ideeps.yaml"
+    log:
+        "logs/out/ideeps/{dataset}_fold-{fold}_iDeepS_os_run.log"
+    shell:
+        "python scripts/run_ideeps_os.py {input.train} {input.test} {output.prediction} {params[0]} {wildcards.fold} &> {log}"
+
 
 rule run_graphprot2:
     input:

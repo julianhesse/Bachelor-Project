@@ -24,7 +24,7 @@ labels = list(df.index.get_level_values(0))
 x = np.arange(len(labels)) * 1.5
 width = 0.4
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(30,8))
 
 bars = []
 for i, method in enumerate(methods):
@@ -34,13 +34,13 @@ for i, method in enumerate(methods):
 
 
 if mode == 'roc_auc':
-    ax.set_ylabel('mean AUC ROC for each dataset')
+    ax.set_ylabel('mean AUROC', fontsize=14)
 else:
-    ax.set_ylabel('mean AP for each dataset')
-ax.set_xlabel('methods')
+    ax.set_ylabel('mean AP for each dataset', fontsize=14)
+ax.set_xlabel('RBP', fontsize=14)
 ax.set_xticks(x)
 ax.set_xticklabels(labels)
-ax.legend()
+ax.legend(prop={'size': 14})
 ax.set_axisbelow(True)
 
 for tick in ax.get_xticklabels():
@@ -49,12 +49,12 @@ for tick in ax.get_xticklabels():
 start = 0.4
 ax.set_ylim([start,1.])
 ax.set_yticks(np.arange(start,1.1, step=0.1))
-# ax.yaxis.grid(True)
+
+ax.set_xlim([-1.5, len(df)*1.5])
 
 # for bar in bars:
 #     ax.bar_label(bar, padding=3, fmt='%.2f')
 
-fig.tight_layout()
 plt.grid(axis='y', zorder=0)
-plt.show()
+fig.tight_layout()
 fig.savefig(snakemake.output[0], dpi=400)

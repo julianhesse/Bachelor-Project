@@ -27,12 +27,10 @@ boxplot = ax.boxplot(df,
 ax.set_ylim([0,1.])
 ax.set_yticks(np.arange(0,1.1, step=0.1))
 if mode == 'roc_auc':
-    plt.xlabel(f"Mean auROC over 5 folds")
-    plt.ylabel(f"Mean auROC over 5 folds")
+    plt.ylabel(f"mean AUROC over 5 folds")
 else:
-    plt.xlabel(f"Mean AP over 5 folds")
-    plt.ylabel(f"Mean AP over 5 folds")
-ax.set_xlabel('methods')
+    plt.ylabel(f"mean AP over 5 folds")
+# ax.set_xlabel('methods')
 ax.yaxis.grid(True)
 
 # fill with colors
@@ -40,4 +38,5 @@ colors = ['pink', 'lightblue', 'lightgreen']
 for patch, color in zip(boxplot['boxes'], colors):
     patch.set_facecolor(color)
 
+fig.tight_layout()
 fig.savefig(snakemake.output[0], dpi=300)

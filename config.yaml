@@ -10,6 +10,7 @@ methods:
   - ideeps
   - graphprot
   - deepbind
+  # - ideeps_os
   # - deepbind_pytorch
 #  - graphprot2
 
@@ -22,6 +23,7 @@ prediction_range:
         deepbind: [0,1],
         deepbind_pytorch: [0,1],
         ideeps: [0,1],
+        ideeps_os: [0,1],
         graphprot: 'open',
         graphprot2: [-1,1],
     }
